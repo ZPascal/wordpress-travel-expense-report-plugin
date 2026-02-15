@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<ruleset name="WordPress Plugin Coding Standards">
+    <description>Coding standards for Travel Expense Report plugin.</description>
+
+    <!-- Exclude internal and vendor files -->
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/node_modules/*</exclude-pattern>
+    <exclude-pattern>*/languages/*</exclude-pattern>
+    <exclude-pattern>*/tests/bootstrap.php</exclude-pattern>
+
+    <!-- Supported file extensions -->
+    <arg name="extensions" value="php"/>
+
+    <!-- Show sniff codes and progress -->
+    <arg value="sp"/>
+    <arg name="colors"/>
+
+    <!-- Path to check -->
+    <file>.</file>
+
+    <!-- Include WordPress Coding Standards -->
+    <!-- Note: You may need to install WPCS locally for this to work in your editor -->
+    <rule ref="WordPress-Core"/>
+    <rule ref="WordPress-Docs"/>
+    <rule ref="WordPress-Extra"/>
+
+    <!-- Check for PHP cross-version compatibility -->
+    <config name="testVersion" value="8.1-"/>
+    <rule ref="PHPCompatibility"/>
+
+    <!-- Verify that no forbidden functions are used -->
+    <rule ref="WordPress.PHP.ForbiddenFunctions">
+        <properties>
+            <property name="forbidden_functions" type="array" value="eval,exec,system,passthru,shell_exec"/>
+        </properties>
+    </rule>
+</ruleset>

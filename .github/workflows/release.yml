@@ -1,0 +1,53 @@
+name: Create Release Zip
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Create Release Zip
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+
+      - name: Install dependencies (production only)
+        run: composer install --no-dev --optimize-autoloader
+
+      - name: Install Node dependencies and build assets
+        run: |
+          npm install
+          npm run build
+
+      - name: Get version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Create Zip
+        run: |
+          mkdir -p build/dpsg-travel-expense-report
+          cp -r assets build/dpsg-travel-expense-report/
+          cp -r includes build/dpsg-travel-expense-report/
+          cp -r languages build/dpsg-travel-expense-report/
+          cp -r templates build/dpsg-travel-expense-report/
+          cp -r vendor build/dpsg-travel-expense-report/
+          cp travel_expense_report.php build/dpsg-travel-expense-report/
+          cp index.php build/dpsg-travel-expense-report/
+          cp readme.txt build/dpsg-travel-expense-report/
+          cp LICENSE build/dpsg-travel-expense-report/
+          cd build
+          zip -r ../dpsg-travel-expense-report-${{ steps.get_version.outputs.VERSION }}.zip dpsg-travel-expense-report
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dpsg-travel-expense-report-${{ steps.get_version.outputs.VERSION }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

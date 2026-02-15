@@ -1,0 +1,16 @@
+{
+  "name": "dpsg-travel-expense-report",
+  "version": "1.0.0",
+  "description": "Asset minification for Travel Expense Report plugin",
+  "main": "index.js",
+  "scripts": {
+    "minify:js": "terser assets/js/travel-expense-report.js -o assets/js/travel-expense-report.min.js && terser assets/js/travel-expense-report-localized.js -o assets/js/travel-expense-report-localized.min.js",
+    "minify:css": "cleancss -o assets/css/travel-expense-report.min.css assets/css/travel-expense-report.css",
+    "minify": "npm run minify:js && npm run minify:css",
+    "build": "npm run minify"
+  },
+  "devDependencies": {
+    "clean-css-cli": "^5.6.3",
+    "terser": "^5.31.1"
+  }
+}

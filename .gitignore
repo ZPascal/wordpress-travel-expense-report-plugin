@@ -1,0 +1,41 @@
+# Composer
+vendor/
+composer.lock
+
+# PHPUnit
+.phpunit.result.cache
+coverage/
+.coverage
+
+# Node
+node_modules/
+npm-debug.log
+
+# IDE & Editor
+.vscode/
+.idea/
+*.sublime-*
+.DS_Store
+
+# WordPress
+wp-config.php
+wp-content/plugins/
+wp-content/uploads/
+wp-content/cache/
+wp-content/backup-*
+
+# Logs
+debug.log
+*.log
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+*~
+.tmp/
+
+# OS
+Thumbs.db
+.DS_Store
+

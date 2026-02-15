@@ -1,0 +1,419 @@
+# Travel Expense Report - German Translation
+# Copyright (C) 2025
+# This file is distributed under the same license as the Travel Expense Report plugin.
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Travel Expense Report 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-17 15:00+0000\n"
+"PO-Revision-Date: 2025-01-17 15:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: German\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# General form labels
+msgid "First name"
+msgstr "Vorname"
+
+msgid "Last name"
+msgstr "Nachname"
+
+msgid "IBAN"
+msgstr "IBAN"
+
+msgid "BIC"
+msgstr "BIC"
+
+msgid "Event / Activity"
+msgstr "Veranstaltung / Aktivität"
+
+msgid "Organizer"
+msgstr "Veranstalter"
+
+msgid "Cost center number"
+msgstr "Kostenstelle"
+
+msgid "Email address (to receive a copy)"
+msgstr "E-Mail-Adresse (um eine Kopie zu erhalten)"
+
+# Form sections
+msgid "Advance payments / purchases"
+msgstr "Vorschüsse / Einkäufe"
+
+msgid "Description"
+msgstr "Beschreibung"
+
+msgid "Amount (€)"
+msgstr "Betrag (€)"
+
+msgid "Receipt"
+msgstr "Beleg"
+
+msgid "Action"
+msgstr "Aktion"
+
+msgid "Trips"
+msgstr "Fahrten"
+
+msgid "Kilometers"
+msgstr "Kilometer"
+
+msgid "Passengers"
+msgstr "Fahrgäste"
+
+msgid "Start"
+msgstr "Start"
+
+msgid "Destination"
+msgstr "Ziel"
+
+msgid "Train tickets"
+msgstr "Zugfahrkarten"
+
+msgid "Cost (€)"
+msgstr "Kosten (€)"
+
+msgid "Ticket"
+msgstr "Fahrkarte"
+
+# Buttons
+msgid "+ Add purchase"
+msgstr "+ Einkauf hinzufügen"
+
+msgid "Upload receipt"
+msgstr "Beleg hochladen"
+
+msgid "+ Add trip"
+msgstr "+ Fahrt hinzufügen"
+
+msgid "+ Add train ticket"
+msgstr "+ Zugfahrkarte hinzufügen"
+
+msgid "Send by email"
+msgstr "Per E-Mail senden"
+
+# Form messages
+msgid "Sending email..."
+msgstr "E-Mail wird gesendet..."
+
+msgid "Email sent successfully!"
+msgstr "E-Mail erfolgreich gesendet!"
+
+msgid "Error sending email."
+msgstr "Fehler beim Senden der E-Mail."
+
+# Validation errors
+msgid "Please fill all required personal details."
+msgstr "Bitte füllen Sie alle erforderlichen persönlichen Angaben aus."
+
+msgid "Invalid IBAN."
+msgstr "Ungültige IBAN."
+
+msgid "Invalid BIC."
+msgstr "Ungültiger BIC."
+
+msgid "Invalid email address."
+msgstr "Ungültige E-Mail-Adresse."
+
+msgid "Please add at least one expense item."
+msgstr "Bitte fügen Sie mindestens einen Ausgabenposten hinzu."
+
+msgid "⚠️ Please upload receipts for all filled purchases."
+msgstr "⚠️ Bitte laden Sie Belege für alle eingetragenen Einkäufe hoch."
+
+msgid "⚠️ Please upload receipts for all filled train tickets."
+msgstr "⚠️ Bitte laden Sie Belege für alle eingetragenen Zugfahrkarten hoch."
+
+msgid "Error loading form."
+msgstr "Fehler beim Laden des Formulars."
+
+# Info boxes
+msgid "⚠️ Important note: Please submit one form per event or cost center."
+msgstr "⚠️ Wichtiger Hinweis: Bitte reichen Sie ein Formular pro Veranstaltung oder Kostenstelle ein."
+
+msgid "ℹ️ Note: Only advance payments and purchases with an invoice, receipt or self-issued slip are accepted. Please upload a receipt for every filled entry."
+msgstr "ℹ️ Hinweis: Nur Vorschüsse und Einkäufe mit Rechnung, Beleg oder Eigenbeleg werden akzeptiert. Bitte laden Sie für jeden Eintrag einen Beleg hoch."
+
+msgid "📊 Cost summary:"
+msgstr "📊 Kostenzusammenfassung:"
+
+msgid "Kilometer allowance"
+msgstr "Kilometergebühr"
+
+msgid "Passenger allowance"
+msgstr "Fahrgastzuschlag"
+
+msgid "Total trip costs:"
+msgstr "Gesamtfahrtkosten:"
+
+msgid "Total train tickets:"
+msgstr "Zugfahrkarten insgesamt:"
+
+msgid "Total costs:"
+msgstr "Gesamtkosten:"
+
+# Email labels
+msgid "Personal details"
+msgstr "Persönliche Angaben"
+
+msgid "Name:"
+msgstr "Name:"
+
+msgid "IBAN:"
+msgstr "IBAN:"
+
+msgid "BIC:"
+msgstr "BIC:"
+
+msgid "Event:"
+msgstr "Veranstaltung:"
+
+msgid "Organizer:"
+msgstr "Veranstalter:"
+
+msgid "Route"
+msgstr "Strecke"
+
+msgid "Total trip costs"
+msgstr "Gesamtfahrtkosten"
+
+msgid "Provided"
+msgstr "Vorhanden"
+
+msgid "Missing"
+msgstr "Fehlend"
+
+# Settings Page - Main title
+msgid "Travel Expense Report — Settings"
+msgstr "Reisekostenabrechnung — Einstellungen"
+
+msgid "Travel Expense Report"
+msgstr "Reisekostenabrechnung"
+
+# Settings Page - Tab labels (for i18n)
+msgid "General Settings"
+msgstr "Allgemeine Einstellungen"
+
+msgid "Internal Email (Admin)"
+msgstr "Interne E-Mail (Admin)"
+
+msgid "Email Settings"
+msgstr "E-Mail-Einstellungen"
+
+msgid "Cost Calculation Rates"
+msgstr "Kostenberechnungssätze"
+
+msgid "Form Input Placeholders"
+msgstr "Formulareingabe-Platzhalter"
+
+msgid "Form Labels & Messages"
+msgstr "Formularbeschriftungen & Nachrichten"
+
+# Settings Page - Field labels
+msgid "Configure recipient, folders and behavior of the travel expense plugin."
+msgstr "Konfigurieren Sie den Empfänger, Ordner und das Verhalten des Reisekostenabrechnungs-Plugins."
+
+msgid "Internal recipient email"
+msgstr "Interne Empfänger-E-Mail"
+
+msgid "Send copy to customer"
+msgstr "Kopie an Kunde senden"
+
+msgid "Delete uploads after sending"
+msgstr "Uploads nach dem Senden löschen"
+
+msgid "Temp folder name"
+msgstr "Name des temporären Ordners"
+
+msgid "Subject prefix"
+msgstr "Betreffzeilen-Präfix"
+
+# Email settings
+msgid "Email sent to internal recipient"
+msgstr "E-Mail an internen Empfänger gesendet"
+
+msgid "Customer Email (Copy)"
+msgstr "Kundenemail (Kopie)"
+
+msgid "Email sent to customer when enabled"
+msgstr "E-Mail an Kunde gesendet, wenn aktiviert"
+
+msgid "Form Messages"
+msgstr "Formularnachrichten"
+
+msgid "Messages displayed on frontend after form submission"
+msgstr "Nachrichten auf dem Frontend nach Formulareintritt"
+
+msgid "Subject Template"
+msgstr "Betreffzeilenvorlage"
+
+msgid "Message Template (HTML)"
+msgstr "Nachrichtenvorlage (HTML)"
+
+msgid "Success Message"
+msgstr "Erfolgsmeldung"
+
+msgid "Failure Message"
+msgstr "Fehlermeldung"
+
+# Cost Rates
+msgid "Configure the kilometer and passenger allowances for trip cost calculation."
+msgstr "Konfigurieren Sie die Kilometer- und Fahrgastzuschläge für die Fahrtenkostenberechnung."
+
+msgid "Kilometer allowance (€/km)"
+msgstr "Kilometergebühr (€/km)"
+
+msgid "Passenger allowance (€/km/person)"
+msgstr "Fahrgastzuschlag (€/km/Person)"
+
+# Form Placeholders
+msgid "Customize the placeholder text shown in form input fields"
+msgstr "Passen Sie den im Formulareingabefeld angezeigten Platzhaltertext an"
+
+msgid "IBAN placeholder"
+msgstr "IBAN-Platzhalter"
+
+msgid "BIC placeholder"
+msgstr "BIC-Platzhalter"
+
+msgid "Event placeholder"
+msgstr "Veranstaltungs-Platzhalter"
+
+msgid "Organizer placeholder"
+msgstr "Veranstalter-Platzhalter"
+
+msgid "Email placeholder"
+msgstr "E-Mail-Platzhalter"
+
+msgid "Trip description placeholder"
+msgstr "Fahrtbeschreibungs-Platzhalter"
+
+msgid "Trip start placeholder"
+msgstr "Fahrtstart-Platzhalter"
+
+msgid "Trip destination placeholder"
+msgstr "Fahrt-Ziel-Platzhalter"
+
+msgid "Ticket start placeholder"
+msgstr "Fahrkarten-Start-Platzhalter"
+
+msgid "Ticket destination placeholder"
+msgstr "Fahrkarten-Ziel-Platzhalter"
+
+msgid "Ticket description placeholder"
+msgstr "Fahrkartenbeschreibungs-Platzhalter"
+
+# Labels & Messages
+msgid "Customize all form labels and messages"
+msgstr "Passen Sie alle Formularbeschriftungen und Nachrichten an"
+
+# Admin settings - buttons & misc
+msgid "Save"
+msgstr "Speichern"
+
+msgid "Quick tests"
+msgstr "Schnelltests"
+
+msgid "Send test email"
+msgstr "Test-E-Mail senden"
+
+msgid "Test recipient (optional)"
+msgstr "Test-Empfänger (optional)"
+
+msgid "empty = configured recipient"
+msgstr "leer = konfigurierter Empfänger"
+
+msgid "Send template preview"
+msgstr "Vorschau der Vorlage senden"
+
+msgid "Notes"
+msgstr "Hinweise"
+
+msgid "The test email uses the configured recipient if no test recipient is provided."
+msgstr "Die Test-E-Mail verwendet den konfigurierten Empfänger, wenn kein Test-Empfänger angegeben wird."
+
+msgid "Make sure your webserver can send emails (SMTP/Sendmail)."
+msgstr "Stellen Sie sicher, dass Ihr Webserver E-Mails senden kann (SMTP/Sendmail)."
+
+msgid "Sending test email..."
+msgstr "Test-E-Mail wird gesendet..."
+
+msgid "Error"
+msgstr "Fehler"
+
+msgid "Network error"
+msgstr "Netzwerkfehler"
+
+msgid "Test the email configuration without submitting the form."
+msgstr "Testen Sie die E-Mail-Konfiguration, ohne das Formular einzureichen."
+
+# Default placeholders
+msgid "De89 3704 0044 0532 0130 00"
+msgstr "DE89 3704 0044 0532 0130 00"
+
+msgid "COBADEFFXXX"
+msgstr "COBADEFFXXX"
+
+msgid "e.g. Summer Camp 2025, January group meeting"
+msgstr "z.B. Sommerlager 2025, Januar-Gruppentreffen"
+
+msgid "e.g. DPSG Group 1, District Youth Office"
+msgstr "z.B. DPSG Gruppe 1, Bezirksjugendleitung"
+
+msgid "name@example.com"
+msgstr "name@example.de"
+
+msgid "Trip description"
+msgstr "Fahrtbeschreibung"
+
+msgid "Trip start"
+msgstr "Fahrtstart"
+
+msgid "Trip destination"
+msgstr "Fahrt-Ziel"
+
+# Email templates - with placeholders
+msgid "Travel expense report — {firstname} {lastname}"
+msgstr "Reisekostenabrechnung — {firstname} {lastname}"
+
+msgid "<p>Internal preview: {firstname} {lastname} — {event} — {total} €</p>"
+msgstr "<p>Interne Vorschau: {firstname} {lastname} — {event} — {total} €</p>"
+
+msgid "Copy of your travel expense report — {event}"
+msgstr "Kopie Ihrer Reisekostenabrechnung — {event}"
+
+msgid "<p>Hi {firstname},<br>This is a preview of your expense report for {event} (Total: {total} €).</p>"
+msgstr "<p>Hallo {firstname},<br>Dies ist eine Vorschau Ihrer Kostenabrechnung für {event} (Gesamtbetrag: {total} €).</p>"
+
+# UI translations for cost display
+msgid "Kilometer allowance: %s €/km"
+msgstr "Kilometergebühr: %s €/km"
+
+msgid "Passenger allowance: %s € per km per passenger"
+msgstr "Fahrgastzuschlag: %s € pro km pro Fahrgast"
+
+msgid "Amount"
+msgstr "Betrag"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "✓ Ticket"
+msgstr "✓ Fahrkarte"
+
+msgid "Travel expense report from"
+msgstr "Reisekostenabrechnung von"
+
+msgid "%.2f € per km per passenger"
+msgstr "%.2f € pro km pro Fahrgast"
+
+msgid "[Travel Expense]"
+msgstr "[Reisekosten]"
+
+msgid "travel-expense-report"
+msgstr "reisekosten-abrechnung"
+

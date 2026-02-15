@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-version: ['8.1', '8.2', '8.3']
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-version }}
+        extensions: mbstring, xml, ctype, iconv, gd
+        coverage: none
+
+    - name: Validate composer.json and composer.lock
+      run: composer validate --strict
+
+    - name: Cache Composer packages
+      id: composer-cache
+      uses: actions/cache@v4
+      with:
+        path: vendor
+        key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-php-${{ matrix.php-version }}-
+
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress
+
+    - name: Install Node dependencies and build assets
+      run: |
+        npm install
+        npm run build
+
+    - name: PHP Lint
+      run: find . -name "*.php" -not -path "./vendor/*" -exec php -l {} \;
+
+    - name: Run PHPCS
+      run: |
+        composer global require dealerdirect/phpcodesniffer-composer-installer
+        composer require --dev wp-coding-standards/wpcs phpcompatibility/phpcompatibility-wp
+        vendor/bin/phpcs --version
+        vendor/bin/phpcs .
+
+    - name: Run PHPStan
+      run: vendor/bin/phpstan analyse -c phpstan.neon
+
+    - name: Security Check
+      uses: symfonycorp/security-checker-action@v5
+
+    - name: Run test suite
+      run: composer test
