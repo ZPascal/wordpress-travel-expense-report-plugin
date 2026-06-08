@@ -285,6 +285,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Clear field value when user clicks on input fields (remove default/placeholder value)
+    document.addEventListener('focus', function(e) {
+        // Handle text, number, and email inputs
+        if (e.target.tagName === 'INPUT' && (e.target.type === 'text' || e.target.type === 'number' || e.target.type === 'email')) {
+            // Get placeholder or current value
+            let placeholder = e.target.getAttribute('placeholder');
+            let value = e.target.value.trim();
+
+            // If value equals placeholder, clear it
+            if (placeholder && value === placeholder) {
+                e.target.value = '';
+            }
+            // Also clear if value is set AND placeholder exists (for fields with value="placeholder")
+            else if (placeholder && value !== '' && e.target.getAttribute('value') === placeholder) {
+                e.target.value = '';
+            }
+        }
+    }, true);
+
     // E-Mail versenden
     sendEmailBtn.addEventListener('click', function() {
         sendEmail();
@@ -456,8 +475,12 @@ document.addEventListener('DOMContentLoaded', function() {
             let ticketId = row.getAttribute('data-ticket-id');
             let receipt = ticketReceipts[ticketId] || null;
 
-            if (cost > 0 || start || target || description) {
-                if ((start || target || description) && !receipt) {
+            // Check if this row has ANY ticket data filled in
+            let hasTicketData = cost > 0 || start || target || description;
+
+            if (hasTicketData) {
+                // Only require receipt if ticket data is actually entered
+                if (!receipt) {
                     missingTickets = true;
                 }
                 ticket_data.push({
@@ -468,10 +491,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     receipt: receipt
                 });
             }
+            // Empty rows (no data) are allowed to not have uploads
         });
 
         if (missingTickets) {
-            emailMessage.innerHTML = '<p style="color: red;">⚠️ Please upload receipts for all filled train tickets.</p>';
+            emailMessage.innerHTML = '<p style="color: red;">⚠️ Please upload ticket receipts for all train tickets with data entered.</p>';
             return;
         }
 

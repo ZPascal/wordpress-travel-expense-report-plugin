@@ -63,6 +63,7 @@ function ter_register_settings_advanced() {
 	add_settings_field( 'ter_customer_message', 'customer_message', 'ter_field_textarea', 'ter-settings-email', 'ter_customer_email', array( 'key' => 'customer_message' ) );
 
 	add_settings_section( 'ter_form_messages', 'form_messages', '__return_empty_string', 'ter-settings-email' );
+	add_settings_field( 'ter_email_footer', 'email_footer', 'ter_field_textarea', 'ter-settings-email', 'ter_form_messages', array( 'key' => 'email_footer' ) );
 	add_settings_field( 'ter_success_message', 'success_message', 'ter_field_textarea', 'ter-settings-email', 'ter_form_messages', array( 'key' => 'success_message' ) );
 	add_settings_field( 'ter_failure_message', 'failure_message', 'ter_field_textarea', 'ter-settings-email', 'ter_form_messages', array( 'key' => 'failure_message' ) );
 
@@ -82,7 +83,7 @@ function ter_register_settings_advanced() {
 	add_settings_section( 'ter_templates', 'labels_messages', '__return_empty_string', 'ter-settings-labels' );
 
 	// Get all translatable keys from both i18n defaults and config defaults.
-	$i18n_defaults = ter_get_localized_defaults();
+	$i18n_defaults = ter_get_untranslated_defaults();
 	$config        = ter_get_default_config();
 
 	// Merge both to get all keys.
@@ -99,33 +100,14 @@ function ter_register_settings_advanced() {
 /**
  * Get translated label for a settings field using i18n.
  * This ensures proper translations from .mo/.po files.
+ * All __() calls are done at runtime, not at script load.
  *
  * @param string $key Settings key.
  * @return string
  */
 function ter_get_field_label( $key ) {
-	// First check if this is a translatable key (label_*, button_*, etc.).
-	// For these keys, show the TRANSLATED value from i18n, not the technical name.
-	if ( strpos( $key, 'label_' ) === 0 ||
-		strpos( $key, 'button_' ) === 0 ||
-		strpos( $key, 'message_' ) === 0 ||
-		strpos( $key, 'error_' ) === 0 ||
-		strpos( $key, 'info_' ) === 0 ||
-		strpos( $key, 'email_' ) === 0 ) {
-
-		// Get the default value from i18n defaults.
-		$i18n_defaults = ter_get_localized_defaults();
-		if ( isset( $i18n_defaults[ $key ] ) ) {
-			$default_value = $i18n_defaults[ $key ];
-			// Use ter_get_translated to get the i18n translation.
-			if ( function_exists( 'ter_get_translated' ) ) {
-				return esc_html( ter_get_translated( $key, $default_value ) );
-			}
-			return esc_html( $default_value );
-		}
-	}
-
-	// For non-translatable keys, use the labels map.
+	// Map of all field keys to their English defaults for translation
+	// NOTE: __() calls are made at runtime to ensure textdomain is loaded.
 	$labels_map = array(
 		// General settings.
 		'general_settings'               => 'General Settings',
@@ -145,6 +127,7 @@ function ter_get_field_label( $key ) {
 		'form_messages'                  => 'Form Messages',
 		'success_message'                => 'Success Message',
 		'failure_message'                => 'Failure Message',
+		'email_footer'                   => 'Email Footer',
 
 		// Cost rates.
 		'cost_rates'                     => 'Cost Calculation Rates',
@@ -165,14 +148,44 @@ function ter_get_field_label( $key ) {
 		'placeholder_ticket_destination' => 'Ticket destination placeholder',
 		'placeholder_ticket_description' => 'Ticket description placeholder',
 
+		// Section headers.
+		'email_configuration'            => 'Email Configuration',
+		'upload_settings'                => 'Upload Settings',
+		'email_subject_prefix'           => 'Email Subject Prefix',
+		'personal_data_placeholders'     => 'Personal Data Placeholders',
+		'trip_placeholders'              => 'Trip Placeholders',
+		'train_ticket_placeholders'      => 'Train Ticket Placeholders',
+		'cost_allowances'                => 'Cost Allowances',
+
 		// Labels & Messages.
 		'labels_messages'                => 'Form Labels & Messages',
 	);
 
+	// Check if key exists in labels map - translate at runtime.
 	if ( isset( $labels_map[ $key ] ) ) {
-		return esc_html( ter_get_translated( $key, $labels_map[ $key ] ) );
+		return esc_html( __( $labels_map[ $key ], 'travel-expense-report' ) ); // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText -- Runtime translation of configured default.
 	}
-	return $key;
+
+	// For translatable form labels (label_*, button_*, message_*, error_*, info_*, email_*)
+	// get the translated value from i18n defaults.
+	if ( strpos( $key, 'label_' ) === 0 ||
+		strpos( $key, 'button_' ) === 0 ||
+		strpos( $key, 'message_' ) === 0 ||
+		strpos( $key, 'error_' ) === 0 ||
+		strpos( $key, 'info_' ) === 0 ||
+		strpos( $key, 'email_' ) === 0 ) {
+
+		// Get the default value from i18n defaults (without translation).
+		$i18n_defaults = ter_get_untranslated_defaults();
+		if ( isset( $i18n_defaults[ $key ] ) ) {
+			$default_text = $i18n_defaults[ $key ];
+			// Translate the default text at runtime.
+			return esc_html( __( $default_text, 'travel-expense-report' ) ); // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText -- Runtime translation of configured default.
+		}
+	}
+
+	// Fallback: return the key itself if not found.
+	return esc_html( $key );
 }
 
 /**
@@ -212,8 +225,8 @@ function ter_field_text( $args ) {
 	$config = get_option( 'ter_config', array() );
 	$value  = isset( $config[ $key ] ) ? $config[ $key ] : '';
 
-	// Get the default value.
-	$defaults = ter_get_localized_defaults();
+	// Get the default value (untranslated).
+	$defaults = ter_get_untranslated_defaults();
 	if ( ! isset( $defaults[ $key ] ) ) {
 		$defaults = ter_get_default_config();
 	}
@@ -245,8 +258,8 @@ function ter_field_text( $args ) {
 	}
 
 	// Apply translation if applicable.
-	if ( $is_translatable && function_exists( 'ter_get_translated' ) ) {
-		$placeholder = ter_get_translated( $key, $default_value );
+	if ( $is_translatable ) {
+		$placeholder = esc_attr( __( $default_value, 'travel-expense-report' ) ); // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText -- Runtime translation of configured default.
 	} else {
 		$placeholder = $default_value;
 	}
@@ -280,8 +293,8 @@ function ter_field_textarea( $args ) {
 	$config = get_option( 'ter_config', array() );
 	$value  = isset( $config[ $key ] ) ? $config[ $key ] : '';
 
-	// Get the default value.
-	$defaults = ter_get_localized_defaults();
+	// Get the default value (untranslated).
+	$defaults = ter_get_untranslated_defaults();
 	if ( ! isset( $defaults[ $key ] ) ) {
 		$defaults = ter_get_default_config();
 	}
@@ -313,8 +326,8 @@ function ter_field_textarea( $args ) {
 	}
 
 	// Apply translation if applicable.
-	if ( $is_translatable && function_exists( 'ter_get_translated' ) ) {
-		$placeholder = ter_get_translated( $key, $default_value );
+	if ( $is_translatable ) {
+		$placeholder = esc_attr( __( $default_value, 'travel-expense-report' ) ); // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText -- Runtime translation of configured default.
 	} else {
 		$placeholder = $default_value;
 	}
@@ -337,7 +350,7 @@ function ter_sanitize_config( $input ) {
 	$defaults = ter_get_default_config();
 
 	// Also get i18n defaults to allow all translatable keys to be saved.
-	$i18n_defaults = function_exists( 'ter_get_localized_defaults' ) ? ter_get_localized_defaults() : array();
+	$i18n_defaults = function_exists( 'ter_get_untranslated_defaults' ) ? ter_get_untranslated_defaults() : array();
 	$all_defaults  = array_merge( $defaults, $i18n_defaults );
 
 	$out = $existing;
@@ -491,71 +504,72 @@ function ter_render_current_tab_fields( $current_tab ) {
 
 	switch ( $current_tab ) {
 		case 'general':
-			echo '<h2>' . esc_html( ter_get_translated( 'general_settings', 'General Settings' ) ) . '</h2>';
-			echo '<p>' . esc_html__( 'Configure recipient, folders and behavior of the travel expense plugin.', 'travel-expense-report' ) . '</p>';
+			echo '<h2>' . esc_html( __( 'General Settings', 'travel-expense-report' ) ) . '</h2>';
+			echo '<p>' . esc_html( __( 'Configure recipient, folders and behavior of the travel expense plugin.', 'travel-expense-report' ) ) . '</p>';
 
 			// Section 1: Email Configuration.
-			echo '<tr class="ter-section-header ter-section-email"><td colspan="2"><h3>📧 ' . esc_html( ter_get_translated( 'email_configuration', 'Email Configuration' ) ) . '</h3></td></tr>';
+			echo '<tr class="ter-section-header ter-section-email"><td colspan="2"><h3>[Email] ' . esc_html( __( 'Email Configuration', 'travel-expense-report' ) ) . '</h3></td></tr>';
 			ter_render_field( 'recipient_email', 'ter_field_email', array( 'key' => 'recipient_email' ) );
 			ter_render_field( 'send_customer_copy', 'ter_field_checkbox', array( 'key' => 'send_customer_copy' ) );
 
 			// Section 2: Upload Settings.
-			echo '<tr class="ter-section-header ter-section-uploads"><td colspan="2"><h3>💾 ' . esc_html( ter_get_translated( 'upload_settings', 'Upload Settings' ) ) . '</h3></td></tr>';
+			echo '<tr class="ter-section-header ter-section-uploads"><td colspan="2"><h3>[Upload] ' . esc_html( __( 'Upload Settings', 'travel-expense-report' ) ) . '</h3></td></tr>';
 			ter_render_field( 'delete_uploads', 'ter_field_checkbox', array( 'key' => 'delete_uploads_after_send' ) );
 			ter_render_field( 'temp_folder', 'ter_field_text', array( 'key' => 'temp_folder' ) );
 
 			// Section 3: Email Templates.
-			echo '<tr class="ter-section-header ter-section-templates"><td colspan="2"><h3>✉️ ' . esc_html( ter_get_translated( 'email_subject_prefix', 'Email Subject Prefix' ) ) . '</h3></td></tr>';
+			echo '<tr class="ter-section-header ter-section-templates"><td colspan="2"><h3>[Message] ' . esc_html( __( 'Email Subject Prefix', 'travel-expense-report' ) ) . '</h3></td></tr>';
 			ter_render_field( 'subject_prefix', 'ter_field_text', array( 'key' => 'subject_prefix' ) );
 			break;
 
 		case 'email':
-			echo '<h2>' . esc_html( ter_get_translated( 'internal_email', 'Internal Email (Admin)' ) ) . '</h2>';
-			echo '<p>' . esc_html__( 'Email sent to internal recipient', 'travel-expense-report' ) . '</p>';
-			echo '<tr class="ter-section-header ter-section-email-internal"><td colspan="2"><h3>🔵 ' . esc_html( ter_get_translated( 'internal_email', 'Internal Email (Admin)' ) ) . '</h3></td></tr>';
+			echo '<h2>' . esc_html( __( 'Internal Email (Admin)', 'travel-expense-report' ) ) . '</h2>';
+			echo '<tr class="ter-section-header ter-section-email-internal"><td colspan="2"><h3>[Admin] ' . esc_html( __( 'Internal Email (Admin)', 'travel-expense-report' ) ) . '</h3></td></tr>';
+			echo '<p>' . esc_html( __( 'Email sent to internal recipient', 'travel-expense-report' ) ) . '</p>';
 			ter_render_field( 'internal_subject', 'ter_field_textarea', array( 'key' => 'internal_subject' ) );
 			ter_render_field( 'internal_message', 'ter_field_textarea', array( 'key' => 'internal_message' ) );
 
-			echo '<tr class="ter-section-header ter-section-email-customer"><td colspan="2"><h3>🟢 ' . esc_html( ter_get_translated( 'customer_email', 'Customer Email (Copy)' ) ) . '</h3></td></tr>';
-			echo '<p style="padding-left:0;margin-top:5px;">' . esc_html__( 'Email sent to customer when enabled', 'travel-expense-report' ) . '</p>';
+			echo '<tr class="ter-section-header ter-section-email-customer"><td colspan="2"><h3>[Customer] ' . esc_html( __( 'Customer Email (Copy)', 'travel-expense-report' ) ) . '</h3></td></tr>';
+			echo '<p>' . esc_html( __( 'Email sent to customer when enabled', 'travel-expense-report' ) ) . '</p>';
 			ter_render_field( 'customer_subject', 'ter_field_textarea', array( 'key' => 'customer_subject' ) );
 			ter_render_field( 'customer_message', 'ter_field_textarea', array( 'key' => 'customer_message' ) );
 
-			echo '<tr class="ter-section-header ter-section-email-messages"><td colspan="2"><h3>🟠 ' . esc_html( ter_get_translated( 'form_messages', 'Form Messages' ) ) . '</h3></td></tr>';
-			echo '<p style="padding-left:0;margin-top:5px;">' . esc_html__( 'Messages displayed on frontend after form submission', 'travel-expense-report' ) . '</p>';
+			echo '<tr class="ter-section-header ter-section-email-messages"><td colspan="2"><h3>[Messages] ' . esc_html( __( 'Form Messages', 'travel-expense-report' ) ) . '</h3></td></tr>';
+			echo '<p>' . esc_html( __( 'Messages displayed on frontend after form submission', 'travel-expense-report' ) ) . '</p>';
+			ter_render_field( 'email_footer', 'ter_field_textarea', array( 'key' => 'email_footer' ) );
 			ter_render_field( 'success_message', 'ter_field_textarea', array( 'key' => 'success_message' ) );
 			ter_render_field( 'failure_message', 'ter_field_textarea', array( 'key' => 'failure_message' ) );
 			break;
 
 		case 'rates':
-			echo '<h2>' . esc_html( ter_get_translated( 'cost_rates', 'Cost Calculation Rates' ) ) . '</h2>';
-			echo '<p>' . esc_html__( 'Configure the kilometer and passenger allowances for trip cost calculation.', 'travel-expense-report' ) . '</p>';
+			echo '<h2>' . esc_html( __( 'Cost Calculation Rates', 'travel-expense-report' ) ) . '</h2>';
+			echo '<p>' . esc_html( __( 'Configure the kilometer and passenger allowances for trip cost calculation.', 'travel-expense-report' ) ) . '</p>';
 
-			echo '<tr class="ter-section-header ter-section-rates"><td colspan="2"><h3>💵 ' . esc_html( ter_get_translated( 'cost_allowances', 'Cost Allowances' ) ) . '</h3></td></tr>';
+			echo '<tr class="ter-section-header ter-section-rates"><td colspan="2"><h3>[Rates] ' . esc_html( __( 'Cost Allowances', 'travel-expense-report' ) ) . '</h3></td></tr>';
 			ter_render_field( 'rate_km', 'ter_field_number', array( 'key' => 'rate_km_allowance' ) );
 			ter_render_field( 'rate_passenger', 'ter_field_number', array( 'key' => 'rate_passenger_allowance' ) );
 			break;
 
 		case 'placeholders':
-			echo '<h2>' . esc_html( ter_get_translated( 'placeholders', 'Form Input Placeholders' ) ) . '</h2>';
-			echo '<p>' . esc_html__( 'Customize the placeholder text shown in form input fields', 'travel-expense-report' ) . '</p>';
+			echo '<h2>' . esc_html( __( 'Form Input Placeholders', 'travel-expense-report' ) ) . '</h2>';
+			echo '<p>' . esc_html( __( 'Customize the placeholder text shown in form input fields', 'travel-expense-report' ) ) . '</p>';
 
 			// Section 1: Personal Data Placeholders.
-			echo '<tr class="ter-section-header ter-section-personal"><td colspan="2"><h3>👤 ' . esc_html( ter_get_translated( 'personal_data_placeholders', 'Personal Data Placeholders' ) ) . '</h3></td></tr>';
+			echo '<tr class="ter-section-header ter-section-personal"><td colspan="2"><h3>[Personal] ' . esc_html( __( 'Personal Data Placeholders', 'travel-expense-report' ) ) . '</h3></td></tr>';
 			$personal_placeholders = array( 'placeholder_iban', 'placeholder_bic', 'placeholder_email', 'placeholder_event', 'placeholder_organizer' );
 			foreach ( $personal_placeholders as $key ) {
 				ter_render_field( $key, 'ter_field_textarea', array( 'key' => $key ) );
 			}
 
 			// Section 2: Trip Placeholders.
-			echo '<tr class="ter-section-header ter-section-trips"><td colspan="2"><h3>🚗 ' . esc_html( ter_get_translated( 'trip_placeholders', 'Trip Placeholders' ) ) . '</h3></td></tr>';
+			echo '<tr class="ter-section-header ter-section-trips"><td colspan="2"><h3>[Trips] ' . esc_html( __( 'Trip Placeholders', 'travel-expense-report' ) ) . '</h3></td></tr>';
 			$trip_placeholders = array( 'placeholder_trip_description', 'placeholder_trip_start', 'placeholder_trip_destination' );
 			foreach ( $trip_placeholders as $key ) {
 				ter_render_field( $key, 'ter_field_textarea', array( 'key' => $key ) );
 			}
 
 			// Section 3: Train Ticket Placeholders.
-			echo '<tr class="ter-section-header ter-section-tickets"><td colspan="2"><h3>🚆 ' . esc_html( ter_get_translated( 'train_ticket_placeholders', 'Train Ticket Placeholders' ) ) . '</h3></td></tr>';
+			echo '<tr class="ter-section-header ter-section-tickets"><td colspan="2"><h3>[Tickets] ' . esc_html( __( 'Train Ticket Placeholders', 'travel-expense-report' ) ) . '</h3></td></tr>';
 			$ticket_placeholders = array( 'placeholder_ticket_start', 'placeholder_ticket_destination', 'placeholder_ticket_description' );
 			foreach ( $ticket_placeholders as $key ) {
 				ter_render_field( $key, 'ter_field_textarea', array( 'key' => $key ) );
@@ -563,16 +577,16 @@ function ter_render_current_tab_fields( $current_tab ) {
 			break;
 
 		case 'labels':
-			echo '<h2>' . esc_html( ter_get_translated( 'labels_messages', 'Form Labels & Messages' ) ) . '</h2>';
-			echo '<p>' . esc_html__( 'Customize all form labels and messages', 'travel-expense-report' ) . '</p>';
+			echo '<h2>' . esc_html( __( 'Form Labels & Messages', 'travel-expense-report' ) ) . '</h2>';
+			echo '<p>' . esc_html( __( 'Customize all form labels and messages', 'travel-expense-report' ) ) . '</p>';
 
 			// Get all defaults for fallback.
-			$i18n_defaults   = ter_get_localized_defaults();
+			$i18n_defaults   = ter_get_untranslated_defaults();
 			$config_defaults = ter_get_default_config();
 			$all_defaults    = array_merge( $config_defaults, $i18n_defaults );
 
 			// Section 1: Personal Details.
-			echo '<tr class="ter-section-header ter-section-personal"><td colspan="2"><h3>📋 ' . esc_html( ter_get_translated( 'personal_details_section', 'Personal Details' ) ) . '</h3></td></tr>';
+			echo '<tr class="ter-section-header ter-section-personal"><td colspan="2"><h3>[Personal Details]</h3></td></tr>';
 			$personal_keys = array( 'info_submit_per_event', 'email_personal_details', 'label_first_name', 'label_last_name', 'label_iban', 'label_bic', 'label_event', 'label_organizer', 'label_cost_center', 'label_customer_email' );
 			foreach ( $personal_keys as $key ) {
 				if ( isset( $all_defaults[ $key ] ) ) {
@@ -581,7 +595,7 @@ function ter_render_current_tab_fields( $current_tab ) {
 			}
 
 			// Section 2: Advance Payments / Purchases.
-			echo '<tr class="ter-section-header ter-section-goods"><td colspan="2"><h3>💰 ' . esc_html( ter_get_translated( 'advance_payments_section', 'Advance Payments / Purchases' ) ) . '</h3></td></tr>';
+			echo '<tr class="ter-section-header ter-section-goods"><td colspan="2"><h3>[Advance Payments]</h3></td></tr>';
 			$goods_keys = array( 'label_goods_section', 'info_receipts_required', 'label_description', 'label_amount', 'label_receipt', 'label_action', 'button_add_goods', 'button_upload_receipt' );
 			foreach ( $goods_keys as $key ) {
 				if ( isset( $all_defaults[ $key ] ) ) {
@@ -590,7 +604,7 @@ function ter_render_current_tab_fields( $current_tab ) {
 			}
 
 			// Section 3: Trips.
-			echo '<tr class="ter-section-header ter-section-trips"><td colspan="2"><h3>🚗 ' . esc_html( ter_get_translated( 'trips_section', 'Trips' ) ) . '</h3></td></tr>';
+			echo '<tr class="ter-section-header ter-section-trips"><td colspan="2"><h3>[Trips]</h3></td></tr>';
 			$trips_keys = array( 'label_trips_section', 'label_kilometers', 'label_passengers', 'label_start', 'label_destination', 'button_add_trip' );
 			foreach ( $trips_keys as $key ) {
 				if ( isset( $all_defaults[ $key ] ) ) {
@@ -599,7 +613,7 @@ function ter_render_current_tab_fields( $current_tab ) {
 			}
 
 			// Section 4: Train Tickets.
-			echo '<tr class="ter-section-header ter-section-tickets"><td colspan="2"><h3>🚆 ' . esc_html( ter_get_translated( 'train_tickets_section', 'Train Tickets' ) ) . '</h3></td></tr>';
+			echo '<tr class="ter-section-header ter-section-tickets"><td colspan="2"><h3>[Train Tickets]</h3></td></tr>';
 			$tickets_keys = array( 'label_tickets_section', 'label_cost', 'label_ticket', 'button_add_ticket' );
 			foreach ( $tickets_keys as $key ) {
 				if ( isset( $all_defaults[ $key ] ) ) {
@@ -608,7 +622,7 @@ function ter_render_current_tab_fields( $current_tab ) {
 			}
 
 			// Section 5: Messages & Info.
-			echo '<tr class="ter-section-header ter-section-messages"><td colspan="2"><h3>ℹ️ ' . esc_html( ter_get_translated( 'messages_info_section', 'Messages & Info' ) ) . '</h3></td></tr>';
+			echo '<tr class="ter-section-header ter-section-messages"><td colspan="2"><h3>[Messages & Info]</h3></td></tr>';
 			$messages_keys = array( 'info_cost_summary', 'info_km_allowance', 'info_passenger_allowance', 'info_trip_costs', 'info_ticket_costs', 'info_total_costs', 'button_send_email', 'message_sending', 'message_success', 'message_error' );
 			foreach ( $messages_keys as $key ) {
 				if ( isset( $all_defaults[ $key ] ) ) {
@@ -617,7 +631,7 @@ function ter_render_current_tab_fields( $current_tab ) {
 			}
 
 			// Section 6: Error Messages.
-			echo '<tr class="ter-section-header ter-section-errors"><td colspan="2"><h3>⚠️ ' . esc_html( ter_get_translated( 'error_messages_section', 'Error Messages' ) ) . '</h3></td></tr>';
+			echo '<tr class="ter-section-header ter-section-errors"><td colspan="2"><h3>[Error Messages]</h3></td></tr>';
 			$error_keys = array( 'error_required_fields', 'error_invalid_iban', 'error_invalid_bic', 'error_invalid_email', 'error_no_receipts', 'error_no_tickets', 'error_loading' );
 			foreach ( $error_keys as $key ) {
 				if ( isset( $all_defaults[ $key ] ) ) {
@@ -626,7 +640,7 @@ function ter_render_current_tab_fields( $current_tab ) {
 			}
 
 			// Section 7: Email Labels.
-			echo '<tr class="ter-section-header ter-section-email"><td colspan="2"><h3>📧 ' . esc_html( ter_get_translated( 'email_labels_section', 'Email Labels' ) ) . '</h3></td></tr>';
+			echo '<tr class="ter-section-header ter-section-email"><td colspan="2"><h3>[Email Labels]</h3></td></tr>';
 			$email_keys = array( 'email_name', 'email_iban', 'email_bic', 'email_event', 'email_organizer', 'email_advance_payments', 'email_trips', 'email_route', 'email_total_trip_costs', 'email_tickets', 'email_status', 'email_ticket_badge', 'email_provided', 'email_missing', 'email_title' );
 			foreach ( $email_keys as $key ) {
 				if ( isset( $all_defaults[ $key ] ) ) {

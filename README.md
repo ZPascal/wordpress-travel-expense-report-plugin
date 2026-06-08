@@ -1,13 +1,20 @@
 # Travel Expense Report Plugin — Installation & Testing Guide
 
+[![CI](https://github.com/YOUR-ORG/dpsg-wordpress-homepage-plugin/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR-ORG/dpsg-wordpress-homepage-plugin/actions/workflows/ci.yml)
+[![WP Plugin Check](https://github.com/YOUR-ORG/dpsg-wordpress-homepage-plugin/actions/workflows/wp-check.yml/badge.svg)](https://github.com/YOUR-ORG/dpsg-wordpress-homepage-plugin/actions/workflows/wp-check.yml)
+[![License: GPL v2+](https://img.shields.io/badge/License-GPLv2%2B-blue.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
+[![PHP 8.1+](https://img.shields.io/badge/PHP-8.1%2B-777BB4.svg?logo=php)](https://www.php.net/)
+
 ## Overview
 
 This is a WordPress plugin for handling travel expense report submissions. It includes:
 - Dynamic form with receipt uploads
+- Ticket upload validation (only required if ticket data is entered)
 - PDF generation with receipts
 - Email delivery to admin and optionally to the user
 - Configurable settings within WordPress admin
-- Unit tests (PHP 8.1 with PHPUnit 9.5+)
+- Comprehensive testing & CI/CD pipeline (GitHub Actions)
+- Minified CSS/JS assets for production
 
 ## System Requirements
 
@@ -174,10 +181,37 @@ This creates an HTML report in the `coverage/` directory.
 ## Support & Development
 
 For issues, feature requests, or contributions:
-1. Review the code and test suite
-2. Add tests for new features in `tests/`
-3. Follow WordPress coding standards
-4. Ensure all tests pass before submitting changes
+
+### Documentation
+- **[Quick Start Guide](QUICKSTART.md)** - Get up and running in 5 minutes
+- **[Development Guide](DEVELOPMENT.md)** - Architecture, key features, testing
+- **[Contributing Guidelines](CONTRIBUTING.md)** - How to contribute
+- **[Release Checklist](RELEASE_CHECKLIST.md)** - Release procedures
+
+### Contribution Process
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Make your changes
+4. Run tests: `composer test`
+5. Build minified assets: `npm run build`
+6. Create a pull request (see [PR Template](.github/pull_request_template.md))
+
+### CI/CD Pipeline
+The project uses GitHub Actions for:
+- **PHP Lint** (versions 8.1, 8.2, 8.3)
+- **PHPCS** (WordPress Coding Standards)
+- **PHPStan** (Static Analysis)
+- **Asset Minification** (CSS/JS)
+- **Unit Tests** (PHPUnit)
+- **Security Checks** (Composer audit)
+- **WordPress Plugin Check** (10up)
+
+All checks must pass before PR merge.
+
+### Key Feature: Ticket Upload Validation
+✨ **NEW**: Ticket receipts are only required when ticket data is entered!
+
+See [DEVELOPMENT.md](DEVELOPMENT.md#ticket-upload-validation) for implementation details.
 
 ## License
 
