@@ -192,6 +192,7 @@ function ter_get_default_config() {
 		'email_provided'                 => 'Provided',
 		'email_missing'                  => 'Missing',
 		'email_title'                    => 'Travel expense report from',
+		'email_footer'                   => 'This travel expense report was generated automatically by the online form.',
 	);
 }
 

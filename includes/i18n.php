@@ -64,8 +64,126 @@ function ter_get_current_language() {
 
 /**
  * Get localized configuration defaults based on current WordPress language
- * Returns all translatable strings without translation
+ * Returns all translatable strings WITHOUT translation wrapped in __()
  * (so that they can be translated at runtime with __())
+ */
+function ter_get_untranslated_defaults() {
+	return array(
+		// General Settings.
+		'recipient_email'                => '',
+		'send_customer_copy'             => 0,
+		'delete_uploads_after_send'      => 0,
+		'temp_folder'                    => 'travel-expense-report',
+		'subject_prefix'                 => '[Travel Expense]',
+
+		// Cost Rates.
+		'rate_km_allowance'              => '0.30',
+		'rate_passenger_allowance'       => '0.01',
+
+		// Email Templates.
+		'internal_subject'               => 'Travel expense report — {firstname} {lastname}',
+		'internal_message'               => '<p>Internal preview: {firstname} {lastname} — {event} — {total} €</p>',
+		'customer_subject'               => 'Copy of your travel expense report — {event}',
+		'customer_message'               => '<p>Hi {firstname},<br>This is a preview of your expense report for {event} (Total: {total} €).</p>',
+		'email_footer'                   => 'This travel expense report was generated automatically by the online form.',
+		'success_message'                => 'Email sent successfully!',
+		'failure_message'                => 'Error sending email.',
+
+		// Form placeholders.
+		'placeholder_iban'               => 'DE89 3704 0044 0532 0130 00',
+		'placeholder_bic'                => 'COBADEFFXXX',
+		'placeholder_event'              => 'e.g. Summer Camp 2025, January group meeting',
+		'placeholder_organizer'          => 'e.g. DPSG Group 1, District Youth Office',
+		'placeholder_cost_center'        => '',
+		'placeholder_email'              => 'name@example.com',
+		'placeholder_trip_description'   => 'Trip description',
+		'placeholder_trip_start'         => 'Trip start',
+		'placeholder_trip_destination'   => 'Trip destination',
+		'placeholder_ticket_start'       => 'Start',
+		'placeholder_ticket_destination' => 'Destination',
+		'placeholder_ticket_description' => 'Description',
+
+		// Form labels and messages.
+		'label_first_name'               => 'First name',
+		'label_last_name'                => 'Last name',
+		'label_iban'                     => 'IBAN',
+		'label_bic'                      => 'BIC',
+		'label_event'                    => 'Event / Activity',
+		'label_organizer'                => 'Organizer',
+		'label_cost_center'              => 'Cost center number',
+		'label_customer_email'           => 'Email address (to receive a copy)',
+		'label_goods_section'            => 'Advance payments / purchases',
+		'label_description'              => 'Description',
+		'label_amount'                   => 'Amount (€)',
+		'label_receipt'                  => 'Receipt',
+		'label_action'                   => 'Action',
+		'label_trips_section'            => 'Trips',
+		'label_kilometers'               => 'Kilometers',
+		'label_passengers'               => 'Passengers',
+		'label_start'                    => 'Start',
+		'label_destination'              => 'Destination',
+		'label_tickets_section'          => 'Train tickets',
+		'label_cost'                     => 'Cost (€)',
+		'label_ticket'                   => 'Ticket',
+
+		// Buttons.
+		'button_add_goods'               => '+ Add purchase',
+		'button_upload_receipt'          => 'Upload receipt',
+		'button_add_trip'                => '+ Add trip',
+		'button_add_ticket'              => '+ Add train ticket',
+		'button_send_email'              => 'Send by email',
+
+		// Messages.
+		'message_sending'                => 'Sending email...',
+		'message_success'                => 'Email sent successfully!',
+		'message_error'                  => 'Error sending email.',
+
+		// Errors.
+		'error_required_fields'          => 'Please fill all required personal details.',
+		'error_invalid_iban'             => 'Invalid IBAN.',
+		'error_invalid_bic'              => 'Invalid BIC.',
+		'error_invalid_email'            => 'Invalid email address.',
+		'error_no_expenses'              => 'Please add at least one expense item.',
+		'error_no_receipts'              => 'Please upload receipts for all filled purchases.',
+		'error_no_tickets'               => 'Please upload receipts for all filled train tickets.',
+		'error_loading'                  => 'Error loading form.',
+
+		// Info boxes.
+		'info_submit_per_event'          => 'Important note: Please submit one form per event or cost center.',
+		'info_receipts_required'         => 'Note: Only advance payments and purchases with an invoice, receipt or self-issued slip are accepted. Please upload a receipt for every filled entry.',
+		'info_cost_summary'              => 'Cost summary:',
+		'info_km_allowance'              => 'Kilometer allowance',
+		'info_passenger_allowance'       => 'Passenger allowance',
+		'info_trip_costs'                => 'Total trip costs:',
+		'info_ticket_costs'              => 'Total train tickets:',
+		'info_total_costs'               => 'Total costs:',
+
+		// Email labels.
+		'email_personal_details'         => 'Personal details',
+		'email_name'                     => 'Name:',
+		'email_iban'                     => 'IBAN:',
+		'email_bic'                      => 'BIC:',
+		'email_event'                    => 'Event:',
+		'email_organizer'                => 'Organizer:',
+		'email_advance_payments'         => 'Advance payments / purchases',
+		'email_trips'                    => 'Trips',
+		'email_route'                    => 'Route',
+		'email_total_trip_costs'         => 'Total trip costs:',
+		'email_tickets'                  => 'Train tickets',
+		'email_status'                   => 'Status',
+		'email_ticket_badge'             => 'Ticket',
+		'email_provided'                 => 'Provided',
+		'email_missing'                  => 'Missing',
+		'email_title'                    => 'Travel expense report from',
+	);
+}
+
+/**
+ * Get localized configuration defaults based on current WordPress language
+ * Returns all translatable strings WITH translation wrapped in __()
+ * (for use in backend configuration, not for rendering labels)
+ *
+ * @deprecated Use ter_get_untranslated_defaults() instead and apply __() at runtime
  */
 function ter_get_localized_defaults() {
 	return array(
@@ -74,107 +192,107 @@ function ter_get_localized_defaults() {
 		'send_customer_copy'             => 0,
 		'delete_uploads_after_send'      => 0,
 		'temp_folder'                    => 'travel-expense-report',
-		'subject_prefix'                 => __( ' [Travel Expense]', 'travel-expense-report' ),
+		'subject_prefix'                 => '[Travel Expense]',
 
 		// Cost Rates.
 		'rate_km_allowance'              => '0.30',
 		'rate_passenger_allowance'       => '0.01',
 
 		// Email Templates.
-		'internal_subject'               => __( 'Travel expense report — {firstname} {lastname}', 'travel-expense-report' ),
-		// phpcs:ignore WordPress.WP.I18n.NoHtmlWrappedStrings -- Email body template keeps its markup.
-		'internal_message'               => __( '<p>Internal preview: {firstname} {lastname} — {event} — {total} €</p>', 'travel-expense-report' ),
-		'customer_subject'               => __( 'Copy of your travel expense report — {event}', 'travel-expense-report' ),
-		'customer_message'               => __( '<p>Hi {firstname},<br>This is a preview of your expense report for {event} (Total: {total} €).</p>', 'travel-expense-report' ),
-		'success_message'                => __( 'Email sent successfully!', 'travel-expense-report' ),
-		'failure_message'                => __( 'Error sending email.', 'travel-expense-report' ),
+		'internal_subject'               => 'Travel expense report — {firstname} {lastname}',
+		'internal_message'               => '<p>Internal preview: {firstname} {lastname} — {event} — {total} €</p>',
+		'customer_subject'               => 'Copy of your travel expense report — {event}',
+		'customer_message'               => '<p>Hi {firstname},<br>This is a preview of your expense report for {event} (Total: {total} €).</p>',
+		'email_footer'                   => 'This travel expense report was generated automatically by the online form.',
+		'success_message'                => 'Email sent successfully!',
+		'failure_message'                => 'Error sending email.',
 
 		// Form placeholders.
 		'placeholder_iban'               => 'DE89 3704 0044 0532 0130 00',
 		'placeholder_bic'                => 'COBADEFFXXX',
-		'placeholder_event'              => __( 'e.g. Summer Camp 2025, January group meeting', 'travel-expense-report' ),
-		'placeholder_organizer'          => __( 'e.g. DPSG Group 1, District Youth Office', 'travel-expense-report' ),
+		'placeholder_event'              => 'e.g. Summer Camp 2025, January group meeting',
+		'placeholder_organizer'          => 'e.g. DPSG Group 1, District Youth Office',
 		'placeholder_cost_center'        => '',
 		'placeholder_email'              => 'name@example.com',
-		'placeholder_trip_description'   => __( 'Trip description', 'travel-expense-report' ),
-		'placeholder_trip_start'         => __( 'Trip start', 'travel-expense-report' ),
-		'placeholder_trip_destination'   => __( 'Trip destination', 'travel-expense-report' ),
-		'placeholder_ticket_start'       => __( 'Start', 'travel-expense-report' ),
-		'placeholder_ticket_destination' => __( 'Destination', 'travel-expense-report' ),
-		'placeholder_ticket_description' => __( 'Description', 'travel-expense-report' ),
+		'placeholder_trip_description'   => 'Trip description',
+		'placeholder_trip_start'         => 'Trip start',
+		'placeholder_trip_destination'   => 'Trip destination',
+		'placeholder_ticket_start'       => 'Start',
+		'placeholder_ticket_destination' => 'Destination',
+		'placeholder_ticket_description' => 'Description',
 
 		// Form labels and messages.
-		'label_first_name'               => __( 'First name', 'travel-expense-report' ),
-		'label_last_name'                => __( 'Last name', 'travel-expense-report' ),
-		'label_iban'                     => __( 'IBAN', 'travel-expense-report' ),
-		'label_bic'                      => __( 'BIC', 'travel-expense-report' ),
-		'label_event'                    => __( 'Event / Activity', 'travel-expense-report' ),
-		'label_organizer'                => __( 'Organizer', 'travel-expense-report' ),
-		'label_cost_center'              => __( 'Cost center number', 'travel-expense-report' ),
-		'label_customer_email'           => __( 'Email address (to receive a copy)', 'travel-expense-report' ),
-		'label_goods_section'            => __( 'Advance payments / purchases', 'travel-expense-report' ),
-		'label_description'              => __( 'Description', 'travel-expense-report' ),
-		'label_amount'                   => __( 'Amount (€)', 'travel-expense-report' ),
-		'label_receipt'                  => __( 'Receipt', 'travel-expense-report' ),
-		'label_action'                   => __( 'Action', 'travel-expense-report' ),
-		'label_trips_section'            => __( 'Trips', 'travel-expense-report' ),
-		'label_kilometers'               => __( 'Kilometers', 'travel-expense-report' ),
-		'label_passengers'               => __( 'Passengers', 'travel-expense-report' ),
-		'label_start'                    => __( 'Start', 'travel-expense-report' ),
-		'label_destination'              => __( 'Destination', 'travel-expense-report' ),
-		'label_tickets_section'          => __( 'Train tickets', 'travel-expense-report' ),
-		'label_cost'                     => __( 'Cost (€)', 'travel-expense-report' ),
-		'label_ticket'                   => __( 'Ticket', 'travel-expense-report' ),
+		'label_first_name'               => 'First name',
+		'label_last_name'                => 'Last name',
+		'label_iban'                     => 'IBAN',
+		'label_bic'                      => 'BIC',
+		'label_event'                    => 'Event / Activity',
+		'label_organizer'                => 'Organizer',
+		'label_cost_center'              => 'Cost center number',
+		'label_customer_email'           => 'Email address (to receive a copy)',
+		'label_goods_section'            => 'Advance payments / purchases',
+		'label_description'              => 'Description',
+		'label_amount'                   => 'Amount (€)',
+		'label_receipt'                  => 'Receipt',
+		'label_action'                   => 'Action',
+		'label_trips_section'            => 'Trips',
+		'label_kilometers'               => 'Kilometers',
+		'label_passengers'               => 'Passengers',
+		'label_start'                    => 'Start',
+		'label_destination'              => 'Destination',
+		'label_tickets_section'          => 'Train tickets',
+		'label_cost'                     => 'Cost (€)',
+		'label_ticket'                   => 'Ticket',
 
 		// Buttons.
-		'button_add_goods'               => __( '+ Add purchase', 'travel-expense-report' ),
-		'button_upload_receipt'          => __( 'Upload receipt', 'travel-expense-report' ),
-		'button_add_trip'                => __( '+ Add trip', 'travel-expense-report' ),
-		'button_add_ticket'              => __( '+ Add train ticket', 'travel-expense-report' ),
-		'button_send_email'              => __( 'Send by email', 'travel-expense-report' ),
+		'button_add_goods'               => '+ Add purchase',
+		'button_upload_receipt'          => 'Upload receipt',
+		'button_add_trip'                => '+ Add trip',
+		'button_add_ticket'              => '+ Add train ticket',
+		'button_send_email'              => 'Send by email',
 
 		// Messages.
-		'message_sending'                => __( 'Sending email...', 'travel-expense-report' ),
-		'message_success'                => __( 'Email sent successfully!', 'travel-expense-report' ),
-		'message_error'                  => __( 'Error sending email.', 'travel-expense-report' ),
+		'message_sending'                => 'Sending email...',
+		'message_success'                => 'Email sent successfully!',
+		'message_error'                  => 'Error sending email.',
 
 		// Errors.
-		'error_required_fields'          => __( 'Please fill all required personal details.', 'travel-expense-report' ),
-		'error_invalid_iban'             => __( 'Invalid IBAN.', 'travel-expense-report' ),
-		'error_invalid_bic'              => __( 'Invalid BIC.', 'travel-expense-report' ),
-		'error_invalid_email'            => __( 'Invalid email address.', 'travel-expense-report' ),
-		'error_no_expenses'              => __( 'Please add at least one expense item.', 'travel-expense-report' ),
-		'error_no_receipts'              => __( '⚠️ Please upload receipts for all filled purchases.', 'travel-expense-report' ),
-		'error_no_tickets'               => __( '⚠️ Please upload receipts for all filled train tickets.', 'travel-expense-report' ),
-		'error_loading'                  => __( 'Error loading form.', 'travel-expense-report' ),
+		'error_required_fields'          => 'Please fill all required personal details.',
+		'error_invalid_iban'             => 'Invalid IBAN.',
+		'error_invalid_bic'              => 'Invalid BIC.',
+		'error_invalid_email'            => 'Invalid email address.',
+		'error_no_expenses'              => 'Please add at least one expense item.',
+		'error_no_receipts'              => 'Please upload receipts for all filled purchases.',
+		'error_no_tickets'               => 'Please upload receipts for all filled train tickets.',
+		'error_loading'                  => 'Error loading form.',
 
 		// Info boxes.
-		'info_submit_per_event'          => __( '⚠️ Important note: Please submit one form per event or cost center.', 'travel-expense-report' ),
-		'info_receipts_required'         => __( 'ℹ️ Note: Only advance payments and purchases with an invoice, receipt or self-issued slip are accepted. Please upload a receipt for every filled entry.', 'travel-expense-report' ),
-		'info_cost_summary'              => __( '📊 Cost summary:', 'travel-expense-report' ),
-		'info_km_allowance'              => __( 'Kilometer allowance', 'travel-expense-report' ),
-		'info_passenger_allowance'       => __( 'Passenger allowance', 'travel-expense-report' ),
-		'info_trip_costs'                => __( 'Total trip costs:', 'travel-expense-report' ),
-		'info_ticket_costs'              => __( 'Total train tickets:', 'travel-expense-report' ),
-		'info_total_costs'               => __( 'Total costs:', 'travel-expense-report' ),
+		'info_submit_per_event'          => 'Important note: Please submit one form per event or cost center.',
+		'info_receipts_required'         => 'Note: Only advance payments and purchases with an invoice, receipt or self-issued slip are accepted. Please upload a receipt for every filled entry.',
+		'info_cost_summary'              => 'Cost summary:',
+		'info_km_allowance'              => 'Kilometer allowance',
+		'info_passenger_allowance'       => 'Passenger allowance',
+		'info_trip_costs'                => 'Total trip costs:',
+		'info_ticket_costs'              => 'Total train tickets:',
+		'info_total_costs'               => 'Total costs:',
 
 		// Email labels.
-		'email_personal_details'         => __( 'Personal details', 'travel-expense-report' ),
-		'email_name'                     => __( 'Name:', 'travel-expense-report' ),
-		'email_iban'                     => __( 'IBAN:', 'travel-expense-report' ),
-		'email_bic'                      => __( 'BIC:', 'travel-expense-report' ),
-		'email_event'                    => __( 'Event:', 'travel-expense-report' ),
-		'email_organizer'                => __( 'Organizer:', 'travel-expense-report' ),
-		'email_advance_payments'         => __( 'Advance payments / purchases', 'travel-expense-report' ),
-		'email_trips'                    => __( 'Trips', 'travel-expense-report' ),
-		'email_route'                    => __( 'Route', 'travel-expense-report' ),
-		'email_total_trip_costs'         => __( 'Total trip costs:', 'travel-expense-report' ),
-		'email_tickets'                  => __( 'Train tickets', 'travel-expense-report' ),
-		'email_status'                   => __( 'Status', 'travel-expense-report' ),
-		'email_ticket_badge'             => __( '✓ Ticket', 'travel-expense-report' ),
-		'email_provided'                 => __( 'Provided', 'travel-expense-report' ),
-		'email_missing'                  => __( 'Missing', 'travel-expense-report' ),
-		'email_title'                    => __( 'Travel expense report from', 'travel-expense-report' ),
+		'email_personal_details'         => 'Personal details',
+		'email_name'                     => 'Name:',
+		'email_iban'                     => 'IBAN:',
+		'email_bic'                      => 'BIC:',
+		'email_event'                    => 'Event:',
+		'email_organizer'                => 'Organizer:',
+		'email_advance_payments'         => 'Advance payments / purchases',
+		'email_trips'                    => 'Trips',
+		'email_route'                    => 'Route',
+		'email_total_trip_costs'         => 'Total trip costs:',
+		'email_tickets'                  => 'Train tickets',
+		'email_status'                   => 'Status',
+		'email_ticket_badge'             => 'Ticket',
+		'email_provided'                 => 'Provided',
+		'email_missing'                  => 'Missing',
+		'email_title'                    => 'Travel expense report from',
 	);
 }
 

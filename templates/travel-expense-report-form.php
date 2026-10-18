@@ -109,9 +109,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<tr data-trip-id="0">
 			<td><input type="number" class="km_input" value="0" min="0"></td>
 			<td><input type="number" class="km_passengers" value="0" min="0" max="20" title="Number of passengers (0.01€ per km per passenger)"></td>
-			<td><input type="text" class="km_description" value="<?php echo esc_attr( ter_get_config( 'placeholder_trip_description', 'Trip description' ) ); ?>" placeholder="<?php echo esc_attr( ter_get_config( 'placeholder_trip_description', 'Trip description' ) ); ?>"></td>
-			<td><input type="text" class="km_start" value="<?php echo esc_attr( ter_get_config( 'placeholder_trip_start', 'Trip start' ) ); ?>" placeholder="<?php echo esc_attr( ter_get_config( 'placeholder_trip_start', 'Trip start' ) ); ?>"></td>
-			<td><input type="text" class="km_target" value="<?php echo esc_attr( ter_get_config( 'placeholder_trip_destination', 'Trip destination' ) ); ?>" placeholder="<?php echo esc_attr( ter_get_config( 'placeholder_trip_destination', 'Trip destination' ) ); ?>"></td>
+			<td><input type="text" class="km_description" placeholder="<?php echo esc_attr( ter_get_config( 'placeholder_trip_description', 'Trip description' ) ); ?>"></td>
+			<td><input type="text" class="km_start" placeholder="<?php echo esc_attr( ter_get_config( 'placeholder_trip_start', 'Trip start' ) ); ?>"></td>
+			<td><input type="text" class="km_target" placeholder="<?php echo esc_attr( ter_get_config( 'placeholder_trip_destination', 'Trip destination' ) ); ?>"></td>
 			<td><button class="ter-btn removeKmRow" data-trip-id="0">−</button></td>
 		</tr>
 		</tbody>
@@ -130,15 +130,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</div>
 			<div class="trip-field">
 				<label class="trip-label"><?php echo esc_html( ter_get_config( 'label_description', 'Description' ) ); ?></label>
-				<input type="text" class="km_description" value="<?php echo esc_attr( ter_get_config( 'placeholder_trip_description', 'Trip description' ) ); ?>" placeholder="<?php echo esc_attr( ter_get_config( 'placeholder_trip_description', 'Trip description' ) ); ?>">
+				<input type="text" class="km_description" placeholder="<?php echo esc_attr( ter_get_config( 'placeholder_trip_description', 'Trip description' ) ); ?>">
 			</div>
 			<div class="trip-field">
 				<label class="trip-label"><?php echo esc_html( ter_get_config( 'label_start', 'Start' ) ); ?></label>
-				<input type="text" class="km_start" value="<?php echo esc_attr( ter_get_config( 'placeholder_trip_start', 'Trip start' ) ); ?>" placeholder="<?php echo esc_attr( ter_get_config( 'placeholder_trip_start', 'Trip start' ) ); ?>">
+				<input type="text" class="km_start" placeholder="<?php echo esc_attr( ter_get_config( 'placeholder_trip_start', 'Trip start' ) ); ?>">
 			</div>
 			<div class="trip-field">
 				<label class="trip-label"><?php echo esc_html( ter_get_config( 'label_destination', 'Destination' ) ); ?></label>
-				<input type="text" class="km_target" value="<?php echo esc_attr( ter_get_config( 'placeholder_trip_destination', 'Trip destination' ) ); ?>" placeholder="<?php echo esc_attr( ter_get_config( 'placeholder_trip_destination', 'Trip destination' ) ); ?>">
+				<input type="text" class="km_target" placeholder="<?php echo esc_attr( ter_get_config( 'placeholder_trip_destination', 'Trip destination' ) ); ?>">
 			</div>
 			<div class="trip-actions">
 				<button class="ter-btn removeKmRow" data-trip-id="0">Remove</button>
@@ -164,9 +164,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</thead>
 		<tbody id="ter_tr_tickets">
 		<tr data-ticket-id="0">
-			<td><input type="text" class="ticket_start" value="<?php echo esc_attr( ter_get_config( 'placeholder_ticket_start', 'Start' ) ); ?>" placeholder="<?php echo esc_attr( ter_get_config( 'placeholder_ticket_start', 'Start' ) ); ?>"></td>
-			<td><input type="text" class="ticket_target" value="<?php echo esc_attr( ter_get_config( 'placeholder_ticket_destination', 'Destination' ) ); ?>" placeholder="<?php echo esc_attr( ter_get_config( 'placeholder_ticket_destination', 'Destination' ) ); ?>"></td>
-			<td><input type="text" class="ticket_description" value="<?php echo esc_attr( ter_get_config( 'placeholder_ticket_description', 'Description' ) ); ?>" placeholder="<?php echo esc_attr( ter_get_config( 'placeholder_ticket_description', 'Description' ) ); ?>"></td>
+			<td><input type="text" class="ticket_start" placeholder="<?php echo esc_attr( ter_get_config( 'placeholder_ticket_start', 'Start' ) ); ?>"></td>
+			<td><input type="text" class="ticket_target" placeholder="<?php echo esc_attr( ter_get_config( 'placeholder_ticket_destination', 'Destination' ) ); ?>"></td>
+			<td><input type="text" class="ticket_description" placeholder="<?php echo esc_attr( ter_get_config( 'placeholder_ticket_description', 'Description' ) ); ?>"></td>
 			<td><input type="number" step="0.01" class="ticket_cost" value="0" min="0"></td>
 			<td>
 				<div class="upload-btn-wrapper">
@@ -185,15 +185,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<div class="ter-trip-card" data-ticket-id="0">
 			<div class="trip-field">
 				<label class="trip-label"><?php echo esc_html( ter_get_config( 'label_start', 'Start' ) ); ?></label>
-				<input type="text" class="ticket_start" value="<?php echo esc_attr( ter_get_config( 'placeholder_ticket_start', 'Start' ) ); ?>" placeholder="<?php echo esc_attr( ter_get_config( 'placeholder_ticket_start', 'Start' ) ); ?>">
+				<input type="text" class="ticket_start" placeholder="<?php echo esc_attr( ter_get_config( 'placeholder_ticket_start', 'Start' ) ); ?>">
 			</div>
 			<div class="trip-field">
 				<label class="trip-label"><?php echo esc_html( ter_get_config( 'label_destination', 'Destination' ) ); ?></label>
-				<input type="text" class="ticket_target" value="<?php echo esc_attr( ter_get_config( 'placeholder_ticket_destination', 'Destination' ) ); ?>" placeholder="<?php echo esc_attr( ter_get_config( 'placeholder_ticket_destination', 'Destination' ) ); ?>">
+				<input type="text" class="ticket_target" placeholder="<?php echo esc_attr( ter_get_config( 'placeholder_ticket_destination', 'Destination' ) ); ?>">
 			</div>
 			<div class="trip-field">
 				<label class="trip-label"><?php echo esc_html( ter_get_config( 'label_description', 'Description' ) ); ?></label>
-				<input type="text" class="ticket_description" value="<?php echo esc_attr( ter_get_config( 'placeholder_ticket_description', 'Description' ) ); ?>" placeholder="<?php echo esc_attr( ter_get_config( 'placeholder_ticket_description', 'Description' ) ); ?>">
+				<input type="text" class="ticket_description" placeholder="<?php echo esc_attr( ter_get_config( 'placeholder_ticket_description', 'Description' ) ); ?>">
 			</div>
 			<div class="trip-field">
 				<label class="trip-label"><?php echo esc_html( ter_get_config( 'label_cost', 'Cost (€)' ) ); ?></label>

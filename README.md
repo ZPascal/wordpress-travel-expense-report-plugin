@@ -1,13 +1,20 @@
 # Travel Expense Report Plugin — Installation & Testing Guide
 
+[![CI](https://github.com/YOUR-ORG/dpsg-wordpress-homepage-plugin/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR-ORG/dpsg-wordpress-homepage-plugin/actions/workflows/ci.yml)
+[![WP Plugin Check](https://github.com/YOUR-ORG/dpsg-wordpress-homepage-plugin/actions/workflows/wp-check.yml/badge.svg)](https://github.com/YOUR-ORG/dpsg-wordpress-homepage-plugin/actions/workflows/wp-check.yml)
+[![License: GPL v2+](https://img.shields.io/badge/License-GPLv2%2B-blue.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
+[![PHP 8.1+](https://img.shields.io/badge/PHP-8.1%2B-777BB4.svg?logo=php)](https://www.php.net/)
+
 ## Overview
 
 This is a WordPress plugin for handling travel expense report submissions. It includes:
 - Dynamic form with receipt uploads
+- Ticket upload validation (only required if ticket data is entered)
 - PDF generation with receipts
 - Email delivery to admin and optionally to the user
 - Configurable settings within WordPress admin
-- Unit tests (PHP 8.1 with PHPUnit 9.5+)
+- Comprehensive testing & CI/CD pipeline (GitHub Actions)
+- Minified CSS/JS assets for production
 
 ## System Requirements
 
@@ -174,10 +181,14 @@ This creates an HTML report in the `coverage/` directory.
 ## Support & Development
 
 For issues, feature requests, or contributions:
-1. Review the code and test suite
-2. Add tests for new features in `tests/`
-3. Follow WordPress coding standards
-4. Ensure all tests pass before submitting changes
+
+### Contribution Process
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Make your changes
+4. Run tests: `composer test`
+5. Build minified assets: `npm run build`
+6. Create a pull request (see [PR Template](.github/pull_request_template.md))
 
 ## License
 

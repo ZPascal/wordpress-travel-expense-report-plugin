@@ -100,6 +100,9 @@ msgstr "Per E-Mail senden"
 msgid "Sending email..."
 msgstr "E-Mail wird gesendet..."
 
+msgid "This travel expense report was generated automatically by the online form."
+msgstr "Dieser Reisekostenbericht wurde automatisch über das Online-Formular erstellt."
+
 msgid "Email sent successfully!"
 msgstr "E-Mail erfolgreich gesendet!"
 
@@ -416,4 +419,5 @@ msgstr "[Reisekosten]"
 
 msgid "travel-expense-report"
 msgstr "reisekosten-abrechnung"
+
 

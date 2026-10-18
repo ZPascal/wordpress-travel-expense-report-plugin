@@ -1050,6 +1050,43 @@ function ter_generate_email_summary( $firstname, $lastname, $iban, $bic, $event,
 }
 
 /**
+ * Send HTML Email using the full email template
+ * Generates a complete HTML document with all expense details
+ *
+ * @param string $recipient Email address.
+ * @param string $subject Email subject.
+ * @param string $firstname User first name.
+ * @param string $lastname User last name.
+ * @param string $iban User IBAN.
+ * @param string $bic User BIC.
+ * @param string $event Event name.
+ * @param string $organizer Event organizer.
+ * @param string $cost_center Cost center.
+ * @param array  $items Purchase items.
+ * @param array  $km_data Trip data.
+ * @param array  $ticket_data Ticket data.
+ * @param float  $km_total_cost Total km cost.
+ * @param float  $ticket_total_cost Total ticket cost.
+ * @param float  $total Total cost.
+ * @param array  $attachments File attachments (PDF).
+ * @return bool True if mail sent successfully
+ */
+function ter_send_html_email( $recipient, $subject, $firstname, $lastname, $iban, $bic, $event, $organizer, $cost_center, $items, $km_data, $ticket_data, $km_total_cost, $ticket_total_cost, $total, $attachments = array() ) {
+	// Set proper headers for HTML email with UTF-8 charset.
+	$headers   = array();
+	$headers[] = 'Content-Type: text/html; charset=UTF-8';
+	$headers[] = 'From: ' . get_option( 'blogname' ) . ' <' . get_option( 'admin_email' ) . '>';
+
+	// Generate full HTML email content using the email template.
+	ob_start();
+	include plugin_dir_path( __FILE__ ) . 'templates/travel-expense-report-email.php';
+	$html_content = ob_get_clean();
+
+	// Send email with HTML content.
+	return wp_mail( $recipient, $subject, $html_content, $headers, $attachments );
+}
+
+/**
  * Render the form shortcode
  */
 function ter_render_form() {
