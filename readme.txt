@@ -2,11 +2,13 @@
 Contributors: pascalzimmermann
 Tags: travel, expense, report, pdf, dpsg
 Requires at least: 5.0
-Tested up to: 6.4
+Tested up to: 7.1
 Requires PHP: 8.1
 Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
+
+Creates a travel expense report form with receipts, mileage allowances and PDF email delivery.
 
 == Description ==
 
