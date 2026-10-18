@@ -182,12 +182,6 @@ This creates an HTML report in the `coverage/` directory.
 
 For issues, feature requests, or contributions:
 
-### Documentation
-- **[Quick Start Guide](QUICKSTART.md)** - Get up and running in 5 minutes
-- **[Development Guide](DEVELOPMENT.md)** - Architecture, key features, testing
-- **[Contributing Guidelines](CONTRIBUTING.md)** - How to contribute
-- **[Release Checklist](RELEASE_CHECKLIST.md)** - Release procedures
-
 ### Contribution Process
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature/my-feature`
@@ -195,23 +189,6 @@ For issues, feature requests, or contributions:
 4. Run tests: `composer test`
 5. Build minified assets: `npm run build`
 6. Create a pull request (see [PR Template](.github/pull_request_template.md))
-
-### CI/CD Pipeline
-The project uses GitHub Actions for:
-- **PHP Lint** (versions 8.1, 8.2, 8.3)
-- **PHPCS** (WordPress Coding Standards)
-- **PHPStan** (Static Analysis)
-- **Asset Minification** (CSS/JS)
-- **Unit Tests** (PHPUnit)
-- **Security Checks** (Composer audit)
-- **WordPress Plugin Check** (10up)
-
-All checks must pass before PR merge.
-
-### Key Feature: Ticket Upload Validation
-✨ **NEW**: Ticket receipts are only required when ticket data is entered!
-
-See [DEVELOPMENT.md](DEVELOPMENT.md#ticket-upload-validation) for implementation details.
 
 ## License
 
