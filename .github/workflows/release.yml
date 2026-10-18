@@ -46,7 +46,7 @@ jobs:
           zip -r ../dpsg-travel-expense-report-${{ steps.get_version.outputs.VERSION }}.zip dpsg-travel-expense-report
 
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v3
         with:
           files: dpsg-travel-expense-report-${{ steps.get_version.outputs.VERSION }}.zip
         env:
