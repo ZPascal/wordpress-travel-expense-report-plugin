@@ -198,3 +198,4 @@ jobs:
           phpunit.xml.dist
           phpstan.neon
           .gitignore
+          languages/generate-mo.php
