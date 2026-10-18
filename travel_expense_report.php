@@ -10,18 +10,20 @@
  * Domain Path: /languages
  * Requires at least: 5.0
  * Requires PHP: 8.1
+ *
+ * @package TravelExpenseReport
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Define plugin constants
+// Define plugin constants.
 define( 'TER_PLUGIN_FILE', __FILE__ );
 define( 'TER_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'TER_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
-// Register activation and deactivation hooks
+// Register activation and deactivation hooks.
 register_activation_hook( __FILE__, 'ter_activate_plugin' );
 register_deactivation_hook( __FILE__, 'ter_deactivate_plugin' );
 
@@ -30,7 +32,7 @@ register_deactivation_hook( __FILE__, 'ter_deactivate_plugin' );
  * Initialize plugin options and set up defaults
  */
 function ter_activate_plugin() {
-	// Ensure defaults are set
+	// Ensure defaults are set.
 	if ( ! get_option( 'ter_config' ) ) {
 		$defaults = array(
 			'recipient_email'           => get_option( 'admin_email' ),
@@ -44,7 +46,7 @@ function ter_activate_plugin() {
 		add_option( 'ter_config', $defaults );
 	}
 
-	// Flush rewrite rules if needed
+	// Flush rewrite rules if needed.
 	flush_rewrite_rules();
 }
 
@@ -53,12 +55,12 @@ function ter_activate_plugin() {
  * Clean up temporary files and cache
  */
 function ter_deactivate_plugin() {
-	// Flush rewrite rules
+	// Flush rewrite rules.
 	flush_rewrite_rules();
 }
 
 // Include configuration and i18n systems
-// CRITICAL: Load in this order to avoid function not found errors
+// CRITICAL: Load in this order to avoid function not found errors.
 if ( ! function_exists( 'ter_get_config' ) ) {
 	require_once TER_PLUGIN_DIR . 'includes/config.php';
 }
@@ -70,7 +72,7 @@ if ( ! function_exists( 'ter_add_settings_page' ) ) {
 }
 
 // Load TCPDF library (if available)
-// Uses tecnickcom/tcpdf from https://github.com/tecnickcom/TCPDF
+// Uses tecnickcom/tcpdf from https://github.com/tecnickcom/TCPDF.
 $tcpdf_path = TER_PLUGIN_DIR . 'vendor/tcpdf/tcpdf.php';
 $fpdi_path  = TER_PLUGIN_DIR . 'vendor/fpdi/src/autoload.php';
 
@@ -92,18 +94,18 @@ if ( file_exists( $tcpdf_path ) && file_exists( $fpdi_path ) ) {
 	define( 'TER_TCPDF_AVAILABLE', false );
 }
 
-// Register shortcode
+// Register shortcode.
 add_shortcode( 'travel_expense_report', 'ter_render_form' );
 
-// AJAX handler for email sending
+// AJAX handler for email sending.
 add_action( 'wp_ajax_ter_send_email', 'ter_send_email' );
 add_action( 'wp_ajax_nopriv_ter_send_email', 'ter_send_email' );
 
-// AJAX handler for file upload
+// AJAX handler for file upload.
 add_action( 'wp_ajax_ter_upload_receipt', 'ter_upload_receipt' );
 add_action( 'wp_ajax_nopriv_ter_upload_receipt', 'ter_upload_receipt' );
 
-// AJAX handler for test email from settings (admin only)
+// AJAX handler for test email from settings (admin only).
 add_action( 'wp_ajax_ter_send_test_email', 'ter_send_test_email' );
 
 /**
@@ -111,16 +113,16 @@ add_action( 'wp_ajax_ter_send_test_email', 'ter_send_test_email' );
  * Requires manage_options capability and uses a nonce from the settings page.
  */
 function ter_send_test_email() {
-	// Capability check
+	// Capability check.
 	if ( ! current_user_can( 'manage_options' ) ) {
 		wp_send_json_error( ter_get_config( 'error_no_permission', 'No permission.' ) );
 		return;
 	}
 
-	// Nonce check
+	// Nonce check.
 	check_ajax_referer( 'ter_test_email', 'nonce' );
 
-	$test_email = isset( $_POST['test_email'] ) ? sanitize_email( $_POST['test_email'] ) : '';
+	$test_email = isset( $_POST['test_email'] ) ? sanitize_email( wp_unslash( $_POST['test_email'] ) ) : '';
 
 	$config = get_option( 'ter_config', array() );
 	$to     = '';
@@ -147,8 +149,12 @@ function ter_send_test_email() {
 	}
 }
 
-// AJAX handler: send a preview of the current templates to an admin-provided email
 add_action( 'wp_ajax_ter_send_preview_email', 'ter_send_preview_email' );
+/**
+ * AJAX handler: send a preview of the current templates to an admin-provided email.
+ *
+ * @return void
+ */
 function ter_send_preview_email() {
 	if ( ! current_user_can( 'manage_options' ) ) {
 		wp_send_json_error( 'No permission.' );
@@ -156,7 +162,7 @@ function ter_send_preview_email() {
 	}
 	check_ajax_referer( 'ter_preview_templates', 'nonce' );
 
-	$preview_email = isset( $_POST['preview_email'] ) ? sanitize_email( $_POST['preview_email'] ) : '';
+	$preview_email = isset( $_POST['preview_email'] ) ? sanitize_email( wp_unslash( $_POST['preview_email'] ) ) : '';
 	$opts          = get_option( 'ter_config', array() );
 	if ( empty( $preview_email ) && ! empty( $opts['recipient_email'] ) ) {
 		$preview_email = $opts['recipient_email'];
@@ -166,7 +172,7 @@ function ter_send_preview_email() {
 		return;
 	}
 
-	// Build sample data for placeholders
+	// Build sample data for placeholders.
 	$sample = array(
 		'firstname'    => 'Max',
 		'lastname'     => 'Mustermann',
@@ -201,6 +207,12 @@ function ter_send_preview_email() {
 	}
 }
 
+/**
+ * Sanitize legacy plugin settings.
+ *
+ * @param array $input Raw settings input.
+ * @return array Sanitized settings.
+ */
 function ter_sanitize_settings( $input ) {
 	$out = array();
 	if ( isset( $input['recipient_email'] ) ) {
@@ -214,7 +226,7 @@ function ter_sanitize_settings( $input ) {
 	if ( isset( $input['subject_prefix'] ) ) {
 		$out['subject_prefix'] = sanitize_text_field( $input['subject_prefix'] );
 	}
-	// Sanitize new template/settings
+	// Sanitize new template/settings.
 	if ( isset( $input['internal_subject'] ) ) {
 		$out['internal_subject'] = sanitize_text_field( $input['internal_subject'] );
 	}
@@ -226,7 +238,7 @@ function ter_sanitize_settings( $input ) {
 		$out['customer_subject'] = sanitize_text_field( $input['customer_subject'] );
 	}
 	if ( isset( $input['customer_message'] ) ) {
-		// Allow basic HTML in the customer message
+		// Allow basic HTML in the customer message.
 		$out['customer_message'] = wp_kses_post( $input['customer_message'] );
 	}
 	if ( isset( $input['success_message'] ) ) {
@@ -242,11 +254,11 @@ function ter_sanitize_settings( $input ) {
 }
 
 /**
- * Apply template variables to a string with {placeholders}
+ * Apply template variables to a string with {placeholders}.
  *
- * @param string $template Template string with {placeholders}
- * @param array  $vars Associative array of variables to replace in the template
- * @return string Processed string with variables replaced
+ * @param string $template Template string with {placeholders}.
+ * @param array  $vars Associative array of variables to replace in the template.
+ * @return string Processed string with variables replaced.
  */
 function ter_apply_template( $template, $vars = array() ) {
 	if ( empty( $template ) ) {
@@ -254,21 +266,21 @@ function ter_apply_template( $template, $vars = array() ) {
 	}
 	$replacements = array();
 	foreach ( $vars as $k => $v ) {
-		// allow HTML in values if explicitly provided as safe; otherwise escape
+		// allow HTML in values if explicitly provided as safe; otherwise escape.
 		$replacements[ '{' . $k . '}' ] = is_string( $v ) ? esc_html( $v ) : esc_html( (string) $v );
 	}
 	return strtr( $template, $replacements );
 }
 
-// Settings page rendering moved to includes/settings-admin.php (ter_render_settings_page_advanced)
+// Settings page rendering moved to includes/settings-admin.php (ter_render_settings_page_advanced).
 
 // --- New helpers: temp upload dir, resolver and file serving ---
 /**
- * Return the plugin temp upload directory inside WordPress system temp dir.
+ * Return the plugin temp upload directory inside the WordPress system temp dir.
  * Created directory looks like: {get_temp_dir()}/travel-expense-report/
  *
- * @param bool $create Create directory if missing
- * @return string Trailing-slash path
+ * @param bool $create Create directory if missing.
+ * @return string Trailing-slash path.
  */
 function ter_get_temp_upload_dir( $create = true ) {
 	$config = get_option( 'ter_config', array() );
@@ -281,10 +293,10 @@ function ter_get_temp_upload_dir( $create = true ) {
 }
 
 /**
- * Resolve a stored uploaded filename (basename) to absolute path if valid.
+ * Resolve a stored uploaded filename (basename) to an absolute path if valid.
  * Returns false if the file is outside the plugin temp dir or does not exist.
  *
- * @param string $basename
+ * @param string $basename Stored file basename.
  * @return string|false
  */
 function ter_resolve_uploaded_file_path( $basename ) {
@@ -299,16 +311,21 @@ function ter_resolve_uploaded_file_path( $basename ) {
 	if ( false === $real_path || false === $real_dir ) {
 		return false;
 	}
-	// Ensure file is inside our temp dir
+	// Ensure file is inside our temp dir.
 	if ( strpos( $real_path, $real_dir ) !== 0 ) {
 		return false;
 	}
 	return $real_path;
 }
 
-// AJAX endpoint to serve temporary uploaded files (preview/download)
+// AJAX endpoint to serve temporary uploaded files (preview/download).
 add_action( 'wp_ajax_ter_serve_temp_file', 'ter_serve_temp_file' );
 add_action( 'wp_ajax_nopriv_ter_serve_temp_file', 'ter_serve_temp_file' );
+/**
+ * AJAX handler: stream a previously uploaded temp file after nonce verification.
+ *
+ * @return void
+ */
 function ter_serve_temp_file() {
 	// Expect GET param 'file' and 'nonce'
 	// The nonce is verified right below, before the file is used.
@@ -326,14 +343,14 @@ function ter_serve_temp_file() {
 		wp_die( 'File not found.' );
 	}
 
-	// Send proper headers and stream the file
+	// Send proper headers and stream the file.
 	$mime = mime_content_type( $path );
 	if ( ! $mime ) {
 		$mime = 'application/octet-stream';
 	}
 	header( 'Content-Type: ' . $mime );
 	header( 'Content-Length: ' . filesize( $path ) );
-	// Inline for images and pdfs
+	// Inline for images and pdfs.
 	header( 'Content-Disposition: inline; filename="' . basename( $path ) . '"' );
 	readfile( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile -- Streaming a validated temp upload.
 	exit;
@@ -343,50 +360,51 @@ function ter_serve_temp_file() {
  * Handle file upload for receipts
  */
 function ter_upload_receipt() {
-	// Nonce security check
+	// Nonce security check.
 	check_ajax_referer( 'ter_nonce', 'nonce' );
 
-	// Validate
+	// Validate.
 	if ( ! isset( $_FILES['receipt'] ) ) {
 		wp_send_json_error( 'No file uploaded.' );
 		return;
 	}
 
-	// Allowed types
-	$allowed_types = array( 'image/jpeg', 'image/png', 'application/pdf' );
-	$file          = $_FILES['receipt'];
+	// Allowed types (extension => MIME), verified by WordPress against the file content.
+	$allowed_mimes = array(
+		'jpg|jpeg' => 'image/jpeg',
+		'png'      => 'image/png',
+		'pdf'      => 'application/pdf',
+	);
 
-	if ( ! in_array( $file['type'], $allowed_types, true ) ) {
+	// Store the file in the plugin temp dir instead of the public uploads dir.
+	$temp_dir      = untrailingslashit( ter_get_temp_upload_dir() );
+	$redirect_temp = static function ( $dirs ) use ( $temp_dir ) {
+		$dirs['path']    = $temp_dir;
+		$dirs['basedir'] = $temp_dir;
+		$dirs['subdir']  = '';
+		return $dirs;
+	};
+
+	require_once ABSPATH . 'wp-admin/includes/file.php';
+
+	add_filter( 'upload_dir', $redirect_temp );
+	$uploaded = wp_handle_upload(
+		$_FILES['receipt'], // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Validated by wp_handle_upload().
+		array(
+			'test_form' => false,
+			'mimes'     => $allowed_mimes,
+		)
+	);
+	remove_filter( 'upload_dir', $redirect_temp );
+
+	if ( isset( $uploaded['error'] ) ) {
 		wp_send_json_error( 'Only JPG, PNG and PDF files are allowed.' );
 		return;
 	}
 
-	// Validate upload
-	if ( ! is_uploaded_file( $file['tmp_name'] ) ) {
-		wp_send_json_error( 'Invalid upload.' );
-		return;
-	}
+	$dest_path = $uploaded['file'];
 
-	// Target directory in WP temp dir (plugin-scoped)
-	$upload_dir = ter_get_temp_upload_dir();
-	if ( ! wp_mkdir_p( $upload_dir ) ) {
-		wp_send_json_error( 'Temporary directory cannot be created.' );
-		return;
-	}
-
-	// Generate a safe filename
-	$safe_name = sanitize_file_name( $file['name'] );
-	$unique    = wp_unique_filename( $upload_dir, $safe_name );
-	$dest_path = $upload_dir . $unique;
-
-	if ( ! move_uploaded_file( $file['tmp_name'], $dest_path ) ) {
-		wp_send_json_error( 'File could not be moved.' );
-		return;
-	}
-
-	chmod( $dest_path, 0644 ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod -- Plain temp upload.
-
-	// URL to access the temp file via our AJAX endpoint (secure with a nonce)
+	// URL to access the temp file via our AJAX endpoint (secure with a nonce).
 	$file_url = add_query_arg(
 		array(
 			'action' => 'ter_serve_temp_file',
@@ -408,81 +426,81 @@ function ter_upload_receipt() {
  * Send email with travel expense report
  */
 function ter_send_email() {
-	// Nonce security check
+	// Nonce security check.
 	check_ajax_referer( 'ter_nonce', 'nonce' );
 
-	// Debug: log incoming POST keys and customer_email raw value to help debugging missing fields
+	// Debug: log incoming POST keys and customer_email raw value to help debugging missing fields.
 	if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 		ter_log( 'ter_send_email POST keys: ' . wp_json_encode( array_keys( $_POST ) ) );
-		$raw_cust = isset( $_POST['customer_email'] ) ? $_POST['customer_email'] : null;
+		$raw_cust = isset( $_POST['customer_email'] ) ? wp_unslash( $_POST['customer_email'] ) : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Debug logging only.
 		ter_log( 'ter_send_email raw customer_email: ' . wp_json_encode( $raw_cust ) );
 	}
 
-	// Validate personal data
-	$firstname   = isset( $_POST['firstname'] ) ? sanitize_text_field( $_POST['firstname'] ) : '';
-	$lastname    = isset( $_POST['lastname'] ) ? sanitize_text_field( $_POST['lastname'] ) : '';
-	$iban        = isset( $_POST['iban'] ) ? sanitize_text_field( $_POST['iban'] ) : '';
-	$bic         = isset( $_POST['bic'] ) ? sanitize_text_field( $_POST['bic'] ) : '';
-	$event       = isset( $_POST['event'] ) ? sanitize_text_field( $_POST['event'] ) : '';
-	$organizer   = isset( $_POST['organizer'] ) ? sanitize_text_field( $_POST['organizer'] ) : '';
-	$cost_center = isset( $_POST['cost_center'] ) ? sanitize_text_field( $_POST['cost_center'] ) : '';
+	// Validate personal data.
+	$firstname   = isset( $_POST['firstname'] ) ? sanitize_text_field( wp_unslash( $_POST['firstname'] ) ) : '';
+	$lastname    = isset( $_POST['lastname'] ) ? sanitize_text_field( wp_unslash( $_POST['lastname'] ) ) : '';
+	$iban        = isset( $_POST['iban'] ) ? sanitize_text_field( wp_unslash( $_POST['iban'] ) ) : '';
+	$bic         = isset( $_POST['bic'] ) ? sanitize_text_field( wp_unslash( $_POST['bic'] ) ) : '';
+	$event       = isset( $_POST['event'] ) ? sanitize_text_field( wp_unslash( $_POST['event'] ) ) : '';
+	$organizer   = isset( $_POST['organizer'] ) ? sanitize_text_field( wp_unslash( $_POST['organizer'] ) ) : '';
+	$cost_center = isset( $_POST['cost_center'] ) ? sanitize_text_field( wp_unslash( $_POST['cost_center'] ) ) : '';
 
-	// Validation - only required fields (organizer is now optional)
+	// Validation - only required fields (organizer is now optional).
 	if ( empty( $firstname ) || empty( $lastname ) || empty( $iban ) || empty( $event ) ) {
 		wp_send_json_error( ter_get_config( 'error_required_fields', 'Please fill all required personal details.' ) );
 		return;
 	}
 
-	// Validate IBAN (Format: 2 letters, 2 digits, then alphanumeric)
+	// Validate IBAN (Format: 2 letters, 2 digits, then alphanumeric).
 	if ( ! preg_match( '/^[A-Z]{2}[0-9]{2}[A-Z0-9]+$/', str_replace( ' ', '', $iban ) ) ) {
 		wp_send_json_error( ter_get_config( 'error_invalid_iban', 'Invalid IBAN.' ) );
 		return;
 	}
 
-	// Validate BIC (only if provided - Format: 6 letters, 2 alphanumeric, optional 3 alphanumeric)
+	// Validate BIC (only if provided - Format: 6 letters, 2 alphanumeric, optional 3 alphanumeric).
 	if ( ! empty( $bic ) && ! preg_match( '/^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$/', $bic ) ) {
 		wp_send_json_error( ter_get_config( 'error_invalid_bic', 'Invalid BIC.' ) );
 		return;
 	}
 
-	// Read data from POST - all optional now
-	$items             = isset( $_POST['items'] ) ? json_decode( stripslashes( $_POST['items'] ), true ) : array();
-	$km_data           = isset( $_POST['km_data'] ) ? json_decode( stripslashes( $_POST['km_data'] ), true ) : array();
-	$ticket_data       = isset( $_POST['ticket_data'] ) ? json_decode( stripslashes( $_POST['ticket_data'] ), true ) : array();
-	$km_total_cost     = isset( $_POST['km_total_cost'] ) ? floatval( $_POST['km_total_cost'] ) : 0;
-	$ticket_total_cost = isset( $_POST['ticket_total_cost'] ) ? floatval( $_POST['ticket_total_cost'] ) : 0;
-	$total             = isset( $_POST['total'] ) ? floatval( $_POST['total'] ) : 0;
+	// Read data from POST - all optional now.
+	$items             = isset( $_POST['items'] ) ? json_decode( wp_unslash( $_POST['items'] ), true ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Decoded JSON, every field is validated and escaped on use.
+	$km_data           = isset( $_POST['km_data'] ) ? json_decode( wp_unslash( $_POST['km_data'] ), true ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Decoded JSON, every field is validated and escaped on use.
+	$ticket_data       = isset( $_POST['ticket_data'] ) ? json_decode( wp_unslash( $_POST['ticket_data'] ), true ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Decoded JSON, every field is validated and escaped on use.
+	$km_total_cost     = isset( $_POST['km_total_cost'] ) ? floatval( wp_unslash( $_POST['km_total_cost'] ) ) : 0;
+	$ticket_total_cost = isset( $_POST['ticket_total_cost'] ) ? floatval( wp_unslash( $_POST['ticket_total_cost'] ) ) : 0;
+	$total             = isset( $_POST['total'] ) ? floatval( wp_unslash( $_POST['total'] ) ) : 0;
 
-	// Validation: at least one of items, km_data, or ticket_data must be present
+	// Validation: at least one of items, km_data, or ticket_data must be present.
 	if ( empty( $items ) && empty( $km_data ) && empty( $ticket_data ) ) {
 		wp_send_json_error( ter_get_config( 'error_no_expenses', 'Please add at least one expense item.' ) );
 		return;
 	}
 
-	// Load plugin options (used for recipient, behavior etc.)
+	// Load plugin options (used for recipient, behavior etc.).
 	$opts = get_option( 'ter_config', array() );
 
-	// Email subject
+	// Email subject.
 	$subject = 'Travel expense report - ' . $firstname . ' ' . $lastname . ' - ' . $event . ' - ' . gmdate( 'd.m.Y' );
 
-	// HTML content for full report
+	// HTML content for full report.
 	$html_content = ter_generate_full_report( $firstname, $lastname, $iban, $bic, $event, $organizer, $cost_center, $items, $km_data, $ticket_data, $km_total_cost, $ticket_total_cost, $total );
 
-	// Email message (summary)
+	// Email message (summary).
 	$message = ter_generate_email_summary( $firstname, $lastname, $iban, $bic, $event, $organizer, $cost_center, $items, $km_total_cost, $ticket_total_cost, $total );
 
-	// Collect attachments
+	// Collect attachments.
 	$attachments = array();
 
-	// PDF generation or HTML fallback
+	// PDF generation or HTML fallback.
 	$upload_dir    = ter_get_temp_upload_dir();
 	$safe_filename = sanitize_file_name( $firstname . '_' . $lastname . '_' . $event . '_' . gmdate( 'Y-m-d' ) );
 
-	// keep track of files we created so we can delete them later
+	// keep track of files we created so we can delete them later.
 	$created_files = array();
 
 	if ( TER_TCPDF_AVAILABLE ) {
-		// TCPDF available - generate PDF
+		// TCPDF available - generate PDF.
 		$pdf_file_path = trailingslashit( $upload_dir ) . 'TravelExpenseReport_' . $safe_filename . '.pdf';
 		$pdf_generated = ter_generate_pdf( $html_content, $pdf_file_path, $items, $ticket_data );
 
@@ -491,18 +509,18 @@ function ter_send_email() {
 			$created_files[] = $pdf_file_path;
 		}
 	} else {
-		// Fallback to HTML: create and attach and remember for cleanup
+		// Fallback to HTML: create and attach and remember for cleanup.
 		$html_file_path = $upload_dir . 'TravelExpenseReport_' . $safe_filename . '.html';
 		file_put_contents( $html_file_path, $html_content ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- Temporary report attachment.
 		$attachments[]   = $html_file_path;
 		$created_files[] = $html_file_path;
 	}
 
-	// Send email
+	// Send email.
 	$to      = ! empty( $opts['recipient_email'] ) ? $opts['recipient_email'] : '';
 	$headers = array( 'Content-Type: text/html; charset=UTF-8' );
 
-	// Subject prefix from settings
+	// Subject prefix from settings.
 	$prefix = ! empty( $opts['subject_prefix'] ) ? trim( $opts['subject_prefix'] ) . ' ' : '';
 	if ( ! empty( $prefix ) ) {
 		$subject = $prefix . $subject;
@@ -511,8 +529,8 @@ function ter_send_email() {
 	$send_customer_copy        = ! empty( $opts['send_customer_copy'] );
 	$delete_uploads_after_send = ! empty( $opts['delete_uploads_after_send'] );
 
-	// Customer copy: optional (only validated if we will send a copy)
-	$customer_email = isset( $_POST['customer_email'] ) ? sanitize_email( $_POST['customer_email'] ) : '';
+	// Customer copy: optional (only validated if we will send a copy).
+	$customer_email = isset( $_POST['customer_email'] ) ? sanitize_email( wp_unslash( $_POST['customer_email'] ) ) : '';
 	if ( $send_customer_copy && ! empty( $customer_email ) && ! is_email( $customer_email ) ) {
 		wp_send_json_error( ter_get_config( 'error_invalid_email', 'Invalid email address.' ) );
 		return;
@@ -526,12 +544,12 @@ function ter_send_email() {
 		$bcc_added = true;
 	}
 
-	// Prepare internal message with template
+	// Prepare internal message with template.
 	$internal_message = ter_get_config( 'internal_message', '' );
 	$internal_subject = ter_get_config( 'internal_subject', $subject );
 	$log_prefix       = ter_get_config( 'log_prefix', 'ter_send_email:' );
 
-	// Apply templates with actual values
+	// Apply templates with actual values.
 	$internal_message = ter_apply_template(
 		$internal_message,
 		array(
@@ -553,32 +571,32 @@ function ter_send_email() {
 		)
 	);
 
-	// Log internal email send attempt
+	// Log internal email send attempt.
 	if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 		ter_log( $log_prefix . ' sending internal email to ' . $to );
 	}
 
-	// Send internal mail
+	// Send internal mail.
 	$customer_sent = false;
 	$sent          = wp_mail( $to, $internal_subject, $internal_message, $headers, $attachments );
 	if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 		ter_log( $log_prefix . ' internal mail to ' . $to . ' result: ' . ( $sent ? 'ok' : 'fail' ) );
 	}
 
-	// If configured, send customer copy (attempt regardless of internal send result)
+	// If configured, send customer copy (attempt regardless of internal send result).
 	$customer_attempted = false;
 	if ( $send_customer_copy && ! empty( $customer_email ) ) {
 		$customer_attempted = true;
-		// If we added BCC to the internal mail, we consider the customer copy attempted/sent
+		// If we added BCC to the internal mail, we consider the customer copy attempted/sent.
 		if ( $bcc_added ) {
-			// customer copy was sent as BCC with the internal mail; reflect that in flags
+			// customer copy was sent as BCC with the internal mail; reflect that in flags.
 			$customer_sent = $sent;
 			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 				ter_log( $log_prefix . ' customer copy via BCC ' . ( $customer_sent ? 'succeeded' : 'failed' ) . ' for ' . $customer_email );
 			}
-			// Fallback: if internal send failed, try sending a separate copy without Bcc header
+			// Fallback: if internal send failed, try sending a separate copy without Bcc header.
 			if ( ! $customer_sent ) {
-				// remove any Bcc headers
+				// remove any Bcc headers.
 				$headers_no_bcc = array_values(
 					array_filter(
 						$headers,
@@ -598,12 +616,12 @@ function ter_send_email() {
 				}
 			}
 		} else {
-			// Separate send (no BCC)
+			// Separate send (no BCC).
 			$cust_subject         = ter_get_config( 'customer_subject', $subject );
 			$cust_message         = ter_get_config( 'customer_message', '' );
 			$customer_attachments = array();
 
-			// Customer message: apply template
+			// Customer message: apply template.
 			$cust_message = ter_apply_template(
 				$cust_message,
 				array(
@@ -625,7 +643,7 @@ function ter_send_email() {
 				)
 			);
 
-			// Send customer email
+			// Send customer email.
 			$customer_sent = wp_mail( $customer_email, $cust_subject, $cust_message, $headers, $customer_attachments );
 			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 				if ( ! $customer_sent ) {
@@ -637,7 +655,7 @@ function ter_send_email() {
 		}
 	}
 
-	// Clean up temporary files (only those we created)
+	// Clean up temporary files (only those we created).
 	$created_deleted = array();
 	foreach ( $created_files as $temp_file ) {
 		$deleted = false;
@@ -650,7 +668,7 @@ function ter_send_email() {
 			'deleted' => (bool) $deleted,
 		);
 	}
-	// Log created-file deletions
+	// Log created-file deletions.
 	ter_append_deletion_log(
 		array(
 			'context' => 'created_files',
@@ -658,7 +676,7 @@ function ter_send_email() {
 		)
 	);
 
-	// Now: only delete uploaded files referenced by the current form (if enabled in settings)
+	// Now: only delete uploaded files referenced by the current form (if enabled in settings).
 	if ( ! empty( $delete_uploads_after_send ) ) {
 		$maybe_dir = ter_get_temp_upload_dir( false );
 		if ( $maybe_dir && is_dir( $maybe_dir ) ) {
@@ -667,7 +685,7 @@ function ter_send_email() {
 			if ( $real_dir && basename( $real_dir ) === $folder ) {
 				$to_delete = array();
 
-				// Collect basenames from items
+				// Collect basenames from items.
 				if ( ! empty( $items ) && is_array( $items ) ) {
 					foreach ( $items as $it ) {
 						if ( ! empty( $it['receipt'] ) ) {
@@ -679,7 +697,7 @@ function ter_send_email() {
 					}
 				}
 
-				// Collect basenames from ticket_data
+				// Collect basenames from ticket_data.
 				if ( ! empty( $ticket_data ) && is_array( $ticket_data ) ) {
 					foreach ( $ticket_data as $tk ) {
 						if ( ! empty( $tk['receipt'] ) ) {
@@ -707,7 +725,7 @@ function ter_send_email() {
 						'deleted'  => (bool) $deleted,
 					);
 				}
-				// Log uploaded receipt deletions
+				// Log uploaded receipt deletions.
 				ter_append_deletion_log(
 					array(
 						'context' => 'uploaded_receipts',
@@ -715,7 +733,7 @@ function ter_send_email() {
 					)
 				);
 
-				// Try to remove the directory if it's now empty
+				// Try to remove the directory if it's now empty.
 				$remaining = glob( $real_dir . DIRECTORY_SEPARATOR . '*' );
 				if ( false === $remaining || 0 === count( $remaining ) ) {
 					rmdir( $real_dir ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_rmdir -- Removing our own empty temp directory.
@@ -744,7 +762,7 @@ function ter_send_email() {
 		}
 		wp_send_json_success( $msg );
 	} else {
-		// If internal send failed, also log if we tried customer copy
+		// If internal send failed, also log if we tried customer copy.
 		if ( ! empty( $customer_email ) && ! empty( $send_customer_copy ) ) {
 			ter_log( $log_prefix . ' internal send failed; customer_attempted=' . ( ! empty( $customer_attempted ) ? '1' : '0' ) . ' customer_sent=' . ( $customer_sent ? '1' : '0' ) );
 		}
@@ -754,6 +772,9 @@ function ter_send_email() {
 
 /**
  * Extract a safe basename from a receipt value which may be a URL (our serve endpoint) or a direct filename.
+ *
+ * @param string $value Receipt URL or filename.
+ * @return string
  */
 function ter_receipt_basename_from_value( $value ) {
 	$value = trim( (string) $value );
@@ -771,36 +792,42 @@ function ter_receipt_basename_from_value( $value ) {
 }
 
 /**
- * Generate PDF with TCPDF (tecnickcom/tcpdf)
+ * Generate PDF with TCPDF (tecnickcom/tcpdf).
+ *
+ * @param string $html_content HTML report content.
+ * @param string $output_path Destination file path.
+ * @param array  $items Expense items.
+ * @param array  $ticket_data Train tickets.
+ * @return bool True when the PDF was created.
  */
 function ter_generate_pdf( $html_content, $output_path, $items, $ticket_data ) {
 	try {
-		// TCPDF object creation
+		// TCPDF object creation.
 		$pdf = new setasign\Fpdi\Tcpdf\Fpdi( PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false );
 
-		// Document information
+		// Document information.
 		$pdf->SetCreator( 'DPSG Travel Expense Report' );
 		$pdf->SetAuthor( 'DPSG' );
 		$pdf->SetTitle( 'Travel Expense Report' );
 
-		// Disable header and footer
+		// Disable header and footer.
 		$pdf->setPrintHeader( false );
 		$pdf->setPrintFooter( false );
 
-		// Set margins
+		// Set margins.
 		$pdf->SetMargins( 15, 15, 15 );
 		$pdf->SetAutoPageBreak( true, 15 );
 
-		// Set font
+		// Set font.
 		$pdf->SetFont( 'helvetica', '', 10 );
 
-		// Add page
+		// Add page.
 		$pdf->AddPage();
 
-		// Write HTML content
+		// Write HTML content.
 		$pdf->writeHTML( $html_content, true, false, true, false, '' );
 
-		// Add item receipts
+		// Add item receipts.
 		foreach ( $items as $item ) {
 			if ( ! empty( $item['receipt'] ) ) {
 				$basename  = ter_receipt_basename_from_value( $item['receipt'] );
@@ -809,14 +836,14 @@ function ter_generate_pdf( $html_content, $output_path, $items, $ticket_data ) {
 					$file_ext = strtolower( pathinfo( $file_path, PATHINFO_EXTENSION ) );
 
 					if ( in_array( $file_ext, array( 'jpg', 'jpeg', 'png' ), true ) ) {
-						// Insert image receipt
+						// Insert image receipt.
 						$pdf->AddPage();
 						$pdf->SetFont( 'helvetica', 'B', 12 );
 						$pdf->Cell( 0, 10, 'Receipt: ' . $item['name'], 0, 1, 'L' );
 						$pdf->Ln( 5 );
 						$pdf->Image( $file_path, 15, 35, 180, 0, $file_ext, '', '', false, 300, '', false, false, 0 );
 					} elseif ( 'pdf' === $file_ext ) {
-						// Insert PDF receipt
+						// Insert PDF receipt.
 						$page_count = $pdf->setSourceFile( $file_path );
 						for ( $i = 1; $i <= $page_count; $i++ ) {
 							$pdf->AddPage();
@@ -833,7 +860,7 @@ function ter_generate_pdf( $html_content, $output_path, $items, $ticket_data ) {
 			}
 		}
 
-		// Add ticket receipts
+		// Add ticket receipts.
 		foreach ( $ticket_data as $ticket ) {
 			if ( ! empty( $ticket['receipt'] ) ) {
 				$basename  = ter_receipt_basename_from_value( $ticket['receipt'] );
@@ -843,14 +870,14 @@ function ter_generate_pdf( $html_content, $output_path, $items, $ticket_data ) {
 					$label    = 'Ticket: ' . $ticket['start'] . ' → ' . $ticket['target'];
 
 					if ( in_array( $file_ext, array( 'jpg', 'jpeg', 'png' ), true ) ) {
-						// Insert image receipt
+						// Insert image receipt.
 						$pdf->AddPage();
 						$pdf->SetFont( 'helvetica', 'B', 12 );
 						$pdf->Cell( 0, 10, $label, 0, 1, 'L' );
 						$pdf->Ln( 5 );
 						$pdf->Image( $file_path, 15, 35, 180, 0, $file_ext, '', '', false, 300, '', false, false, 0 );
 					} elseif ( 'pdf' === $file_ext ) {
-						// Insert PDF receipt
+						// Insert PDF receipt.
 						$page_count = $pdf->setSourceFile( $file_path );
 						for ( $i = 1; $i <= $page_count; $i++ ) {
 							$pdf->AddPage();
@@ -867,7 +894,7 @@ function ter_generate_pdf( $html_content, $output_path, $items, $ticket_data ) {
 			}
 		}
 
-		// Save PDF
+		// Save PDF.
 		$pdf->Output( $output_path, 'F' );
 		return true;
 
@@ -878,17 +905,44 @@ function ter_generate_pdf( $html_content, $output_path, $items, $ticket_data ) {
 }
 
 /**
- * Generate full HTML report with all details and receipts
+ * Generate full HTML report with all details and receipts.
+ *
+ * @param string $firstname First name.
+ * @param string $lastname Last name.
+ * @param string $iban IBAN.
+ * @param string $bic BIC.
+ * @param string $event Event name.
+ * @param string $organizer Organizer.
+ * @param string $cost_center Cost center.
+ * @param array  $items Expense items.
+ * @param array  $km_data Mileage trips.
+ * @param array  $ticket_data Train tickets.
+ * @param float  $km_total_cost Total mileage cost.
+ * @param float  $ticket_total_cost Total ticket cost.
+ * @param float  $total Grand total.
+ * @return string HTML report.
  */
-// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- All parameters are consumed by the included template.
-function ter_generate_full_report( $firstname, $lastname, $iban, $bic, $event, $organizer, $cost_center, $items, $km_data, $ticket_data, $km_total_cost, $ticket_total_cost, $total ) {
+function ter_generate_full_report( $firstname, $lastname, $iban, $bic, $event, $organizer, $cost_center, $items, $km_data, $ticket_data, $km_total_cost, $ticket_total_cost, $total ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- All parameters are consumed by the included template.
 	ob_start();
 	include plugin_dir_path( __FILE__ ) . 'templates/travel-expense-report-email.php';
 	return ob_get_clean();
 }
 
 /**
- * Generate email summary
+ * Generate email summary.
+ *
+ * @param string $firstname First name.
+ * @param string $lastname Last name.
+ * @param string $iban IBAN.
+ * @param string $bic BIC.
+ * @param string $event Event name.
+ * @param string $organizer Organizer.
+ * @param string $cost_center Cost center.
+ * @param array  $items Expense items.
+ * @param float  $km_total_cost Total mileage cost.
+ * @param float  $ticket_total_cost Total ticket cost.
+ * @param float  $total Grand total.
+ * @return string HTML summary.
  */
 function ter_generate_email_summary( $firstname, $lastname, $iban, $bic, $event, $organizer, $cost_center, $items, $km_total_cost, $ticket_total_cost, $total ) {
 	$safe_filename = sanitize_file_name( $firstname . '_' . $lastname . '_' . $event . '_' . gmdate( 'Y-m-d' ) );
@@ -1001,7 +1055,7 @@ function ter_generate_email_summary( $firstname, $lastname, $iban, $bic, $event,
 function ter_render_form() {
 	$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
 
-	// Enqueue CSS
+	// Enqueue CSS.
 	wp_enqueue_style(
 		'ter-styles',
 		plugin_dir_url( __FILE__ ) . 'assets/css/travel-expense-report' . $suffix . '.css',
@@ -1009,7 +1063,7 @@ function ter_render_form() {
 		'1.0.0'
 	);
 
-	// Enqueue JavaScript
+	// Enqueue JavaScript.
 	wp_enqueue_script(
 		'ter-script',
 		plugin_dir_url( __FILE__ ) . 'assets/js/travel-expense-report-localized' . $suffix . '.js',
@@ -1018,12 +1072,12 @@ function ter_render_form() {
 		true
 	);
 
-	// Localize script with AJAX URL, nonce, configurable labels and rates
+	// Localize script with AJAX URL, nonce, configurable labels and rates.
 	$opts_for_js = get_option( 'ter_config', array() );
-	// Use localized defaults (language-aware)
+	// Use localized defaults (language-aware).
 	$defaults = ter_get_localized_defaults();
 
-	// Merge: defaults first, then override with saved options (saved options take precedence)
+	// Merge: defaults first, then override with saved options (saved options take precedence).
 	$labels = array_merge( $defaults, $opts_for_js );
 
 	wp_localize_script(
@@ -1041,7 +1095,7 @@ function ter_render_form() {
 		)
 	);
 
-	// Load form template
+	// Load form template.
 	ob_start();
 	include plugin_dir_path( __FILE__ ) . 'templates/travel-expense-report-form.php';
 	return ob_get_clean();
@@ -1051,6 +1105,9 @@ function ter_render_form() {
  * Append entries to a deletion log stored in option 'ter_deletion_log'.
  * Each log item: ['time'=>int, 'user'=>string, 'context'=>string, 'entries'=>array]
  * Keep recent 200 entries.
+ *
+ * @param array $data Log item to append.
+ * @return void
  */
 function ter_append_deletion_log( $data ) {
 	$log      = get_option( 'ter_deletion_log', array() );
@@ -1063,12 +1120,12 @@ function ter_append_deletion_log( $data ) {
 		'entries' => isset( $data['entries'] ) ? $data['entries'] : array(),
 	);
 	$log[]    = $item;
-	// keep last 200
+	// keep last 200.
 	if ( count( $log ) > 200 ) {
 		$log = array_slice( $log, -200 );
 	}
 	update_option( 'ter_deletion_log', $log );
-	// Also write an error_log line for quick debugging
+	// Also write an error_log line for quick debugging.
 	if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 		ter_log( 'ter_deletion_log: ' . wp_json_encode( $item ) );
 	}
@@ -1081,8 +1138,13 @@ function ter_get_deletion_log() {
 	return get_option( 'ter_deletion_log', array() );
 }
 
-// AJAX handler to clear deletion log (admin only)
+// AJAX handler to clear deletion log (admin only).
 add_action( 'wp_ajax_ter_clear_deletion_log', 'ter_clear_deletion_log' );
+/**
+ * AJAX handler to clear the deletion log (admin only).
+ *
+ * @return void
+ */
 function ter_clear_deletion_log() {
 	if ( ! current_user_can( 'manage_options' ) ) {
 		wp_send_json_error( 'No permission.' );

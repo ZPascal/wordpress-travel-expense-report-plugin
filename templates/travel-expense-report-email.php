@@ -1,9 +1,15 @@
 <?php
+/**
+ * Travel Expense Report Email / PDF Template
+ *
+ * @package TravelExpenseReport
+ */
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Ensure variables are defined when this template is included
+// Ensure variables are defined when this template is included.
 $firstname         = isset( $firstname ) ? $firstname : '';
 $lastname          = isset( $lastname ) ? $lastname : '';
 $iban              = isset( $iban ) ? $iban : '';
@@ -176,7 +182,7 @@ $total             = isset( $total ) ? $total : 0;
 							$start       = sanitize_text_field( $trip['start'] );
 							$target      = sanitize_text_field( $trip['target'] );
 
-							// Get configurable rates
+							// Get configurable rates.
 							$km_rate        = floatval( ter_get_config( 'rate_km_allowance', '0.30' ) );
 							$passenger_rate = floatval( ter_get_config( 'rate_passenger_allowance', '0.01' ) );
 

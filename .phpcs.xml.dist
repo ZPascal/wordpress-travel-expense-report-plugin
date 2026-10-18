@@ -21,6 +21,7 @@
     <!-- Include WordPress Coding Standards -->
     <!-- Note: You may need to install WPCS locally for this to work in your editor -->
     <rule ref="WordPress-Core"/>
+    <rule ref="WordPress-Docs"/>
     <rule ref="WordPress-Extra"/>
 
     <!-- Plugin-specific settings -->

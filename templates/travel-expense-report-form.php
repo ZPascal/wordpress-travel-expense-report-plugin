@@ -1,11 +1,13 @@
 <?php
+/**
+ * Travel Expense Report Form Template
+ *
+ * @package TravelExpenseReport
+ */
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
-/**
- * Travel Expense Report Form Template
- */
 ?>
 <div class="ter-container">
 	<div class="ter-info-box">

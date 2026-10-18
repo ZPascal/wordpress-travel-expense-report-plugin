@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ main, master ]
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   wp-plugin-check:
     name: WP Plugin Check
@@ -14,8 +18,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # This action checks the plugin for many common errors and WordPress.org requirements
+      # This action checks the plugin for many common errors and WordPress.org requirements.
+      # The repository name is not the plugin slug (it is shipped as travel-expense-report),
+      # and development-only files are not part of the release zip, so they are excluded.
       - name: WordPress Plugin Check
         uses: WordPress/plugin-check-action@v1
         with:
           build-dir: '.'
+          slug: 'travel-expense-report'
+          exclude-directories: |
+            tests
+            .github
+          exclude-files: |
+            .phpcs.xml.dist
+            phpunit.xml.dist
+            phpstan.neon
+            .gitignore

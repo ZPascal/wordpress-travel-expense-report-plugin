@@ -4,22 +4,29 @@
  *
  * Handles language support for English and German
  * Integrates with WordPress language settings
+ *
+ * @package TravelExpenseReport
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Text domain constant
+// Text domain constant.
 define( 'TER_TEXTDOMAIN', 'travel-expense-report' );
 
 // Register text domain for both frontend and admin
-// Use early hooks to ensure textdomain is loaded before admin menu is registered
+// Use early hooks to ensure textdomain is loaded before admin menu is registered.
 add_action( 'plugins_loaded', 'ter_load_textdomain', 10 );
-add_action( 'admin_init', 'ter_load_textdomain', 1 );  // Load earlier in admin context
+add_action( 'admin_init', 'ter_load_textdomain', 1 ); // Load earlier in admin context.
 
+/**
+ * Load the plugin text domain.
+ *
+ * @return void
+ */
 function ter_load_textdomain() {
-	// Check if already loaded (function exists in WordPress 4.6+)
+	// Check if already loaded (function exists in WordPress 4.6+).
 	if ( function_exists( 'is_textdomain_loaded' ) && is_textdomain_loaded( TER_TEXTDOMAIN ) ) {
 		return;
 	}
@@ -28,12 +35,12 @@ function ter_load_textdomain() {
 	// Parameters:
 	// 1. Text domain (string)
 	// 2. Deprecated path (false)
-	// 3. Relative path from plugins directory
+	// 3. Relative path from plugins directory.
 
 	$plugin_rel_path = dirname( plugin_basename( __FILE__ ) ) . '/../languages';
 	$loaded          = load_plugin_textdomain( TER_TEXTDOMAIN, false, $plugin_rel_path );
 
-	// Debug
+	// Debug.
 	if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 		ter_log( 'TER i18n: Plugin file: ' . __FILE__ );
 		ter_log( 'TER i18n: Plugin basename: ' . plugin_basename( __FILE__ ) );
@@ -48,7 +55,7 @@ function ter_load_textdomain() {
  */
 function ter_get_current_language() {
 	$lang = get_locale();
-	// Return just the language part (en, de, etc.)
+	// Return just the language part (en, de, etc.).
 	return substr( $lang, 0, 2 );
 }
 
@@ -59,18 +66,18 @@ function ter_get_current_language() {
  */
 function ter_get_localized_defaults() {
 	return array(
-		// General Settings
+		// General Settings.
 		'recipient_email'                => '',
 		'send_customer_copy'             => 0,
 		'delete_uploads_after_send'      => 0,
 		'temp_folder'                    => 'travel-expense-report',
 		'subject_prefix'                 => __( ' [Travel Expense]', 'travel-expense-report' ),
 
-		// Cost Rates
+		// Cost Rates.
 		'rate_km_allowance'              => '0.30',
 		'rate_passenger_allowance'       => '0.01',
 
-		// Email Templates
+		// Email Templates.
 		'internal_subject'               => __( 'Travel expense report — {firstname} {lastname}', 'travel-expense-report' ),
 		// phpcs:ignore WordPress.WP.I18n.NoHtmlWrappedStrings -- Email body template keeps its markup.
 		'internal_message'               => __( '<p>Internal preview: {firstname} {lastname} — {event} — {total} €</p>', 'travel-expense-report' ),
@@ -79,7 +86,7 @@ function ter_get_localized_defaults() {
 		'success_message'                => __( 'Email sent successfully!', 'travel-expense-report' ),
 		'failure_message'                => __( 'Error sending email.', 'travel-expense-report' ),
 
-		// Form placeholders
+		// Form placeholders.
 		'placeholder_iban'               => 'DE89 3704 0044 0532 0130 00',
 		'placeholder_bic'                => 'COBADEFFXXX',
 		'placeholder_event'              => __( 'e.g. Summer Camp 2025, January group meeting', 'travel-expense-report' ),
@@ -93,7 +100,7 @@ function ter_get_localized_defaults() {
 		'placeholder_ticket_destination' => __( 'Destination', 'travel-expense-report' ),
 		'placeholder_ticket_description' => __( 'Description', 'travel-expense-report' ),
 
-		// Form labels and messages
+		// Form labels and messages.
 		'label_first_name'               => __( 'First name', 'travel-expense-report' ),
 		'label_last_name'                => __( 'Last name', 'travel-expense-report' ),
 		'label_iban'                     => __( 'IBAN', 'travel-expense-report' ),
@@ -116,19 +123,19 @@ function ter_get_localized_defaults() {
 		'label_cost'                     => __( 'Cost (€)', 'travel-expense-report' ),
 		'label_ticket'                   => __( 'Ticket', 'travel-expense-report' ),
 
-		// Buttons
+		// Buttons.
 		'button_add_goods'               => __( '+ Add purchase', 'travel-expense-report' ),
 		'button_upload_receipt'          => __( 'Upload receipt', 'travel-expense-report' ),
 		'button_add_trip'                => __( '+ Add trip', 'travel-expense-report' ),
 		'button_add_ticket'              => __( '+ Add train ticket', 'travel-expense-report' ),
 		'button_send_email'              => __( 'Send by email', 'travel-expense-report' ),
 
-		// Messages
+		// Messages.
 		'message_sending'                => __( 'Sending email...', 'travel-expense-report' ),
 		'message_success'                => __( 'Email sent successfully!', 'travel-expense-report' ),
 		'message_error'                  => __( 'Error sending email.', 'travel-expense-report' ),
 
-		// Errors
+		// Errors.
 		'error_required_fields'          => __( 'Please fill all required personal details.', 'travel-expense-report' ),
 		'error_invalid_iban'             => __( 'Invalid IBAN.', 'travel-expense-report' ),
 		'error_invalid_bic'              => __( 'Invalid BIC.', 'travel-expense-report' ),
@@ -138,7 +145,7 @@ function ter_get_localized_defaults() {
 		'error_no_tickets'               => __( '⚠️ Please upload receipts for all filled train tickets.', 'travel-expense-report' ),
 		'error_loading'                  => __( 'Error loading form.', 'travel-expense-report' ),
 
-		// Info boxes
+		// Info boxes.
 		'info_submit_per_event'          => __( '⚠️ Important note: Please submit one form per event or cost center.', 'travel-expense-report' ),
 		'info_receipts_required'         => __( 'ℹ️ Note: Only advance payments and purchases with an invoice, receipt or self-issued slip are accepted. Please upload a receipt for every filled entry.', 'travel-expense-report' ),
 		'info_cost_summary'              => __( '📊 Cost summary:', 'travel-expense-report' ),
@@ -148,7 +155,7 @@ function ter_get_localized_defaults() {
 		'info_ticket_costs'              => __( 'Total train tickets:', 'travel-expense-report' ),
 		'info_total_costs'               => __( 'Total costs:', 'travel-expense-report' ),
 
-		// Email labels
+		// Email labels.
 		'email_personal_details'         => __( 'Personal details', 'travel-expense-report' ),
 		'email_name'                     => __( 'Name:', 'travel-expense-report' ),
 		'email_iban'                     => __( 'IBAN:', 'travel-expense-report' ),
@@ -169,13 +176,13 @@ function ter_get_localized_defaults() {
 }
 
 /**
- * Get a translated string using the default value and the translation
- * This ensures proper i18n at runtime (when textdomain is loaded)
+ * Get a translated string using the default value and the translation.
+ * This ensures proper i18n at runtime (when the textdomain is loaded).
  *
- * @param string $key The config key
+ * @param string $key The config key.
  * @param string $default_value Default English text.
- * @param string $context Optional context for disambiguation
- * @return string Translated text or default
+ * @param string $context Optional context for disambiguation.
+ * @return string Translated text or default.
  */
 function ter_get_translated( $key, $default_value, $context = '' ) {
 	if ( $context ) {
@@ -187,24 +194,36 @@ function ter_get_translated( $key, $default_value, $context = '' ) {
 }
 
 /**
- * Get a translated string with attribute escaping
- * Safe for use in HTML attributes
+ * Get a translated string with attribute escaping.
+ * Safe for use in HTML attributes.
+ *
+ * @param string $key The config key.
+ * @param string $default_value Default English text.
+ * @return string
  */
 function ter_get_translated_attr( $key, $default_value ) {
 	return esc_attr( ter_get_translated( $key, $default_value ) );
 }
 
 /**
- * Get a translated string with HTML escaping
- * Safe for use in HTML content
+ * Get a translated string with HTML escaping.
+ * Safe for use in HTML content.
+ *
+ * @param string $key The config key.
+ * @param string $default_value Default English text.
+ * @return string
  */
 function ter_get_translated_html( $key, $default_value ) {
 	return esc_html( ter_get_translated( $key, $default_value ) );
 }
 
 /**
- * Get a translated string allowing HTML tags
+ * Get a translated string allowing HTML tags.
  * Use only with trusted content!
+ *
+ * @param string $key The config key.
+ * @param string $default_value Default English text.
+ * @return string
  */
 function ter_get_translated_html_content( $key, $default_value ) {
 	return wp_kses_post( ter_get_translated( $key, $default_value ) );

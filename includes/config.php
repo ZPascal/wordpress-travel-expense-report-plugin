@@ -4,6 +4,8 @@
  *
  * Stores all plugin settings with defaults
  * Integrates with i18n system for translations
+ *
+ * @package TravelExpenseReport
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -26,7 +28,13 @@ function ter_log( $message ) {
 	error_log( $message ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Central, WP_DEBUG-gated logger.
 }
 
-// Helper function to get config value with localized defaults
+/**
+ * Get a config value with localized defaults.
+ *
+ * @param string $key Config key.
+ * @param mixed  $default_value Fallback when nothing is configured.
+ * @return mixed
+ */
 function ter_get_config( $key, $default_value = '' ) {
 	$config   = get_option( 'ter_config', array() );
 	$defaults = ter_get_default_config();
@@ -34,7 +42,7 @@ function ter_get_config( $key, $default_value = '' ) {
 	// If value is explicitly set in config AND it's different from the hardcoded English default, use it.
 	// This allows users to customize strings while still allowing i18n for non-customized defaults.
 	if ( isset( $config[ $key ] ) && isset( $defaults[ $key ] ) && $config[ $key ] !== $defaults[ $key ] ) {
-		// For empty values in optional fields (like cost_center), return empty string if it was intended
+		// For empty values in optional fields (like cost_center), return empty string if it was intended.
 		return $config[ $key ];
 	}
 
@@ -45,21 +53,21 @@ function ter_get_config( $key, $default_value = '' ) {
 	}
 
 	// Otherwise get localized default (if i18n is ready)
-	// This will use translations from .mo/.po files
+	// This will use translations from .mo/.po files.
 	if ( function_exists( 'ter_get_localized_defaults' ) ) {
 		$localized_defaults = ter_get_localized_defaults();
 		if ( isset( $localized_defaults[ $key ] ) ) {
 			$localized_default = $localized_defaults[ $key ];
 
 			// For label_*, button_*, message_*, error_*, info_* keys
-			// Apply translation function to get i18n translated text
+			// Apply translation function to get i18n translated text.
 			if ( strpos( $key, 'label_' ) === 0 ||
 				strpos( $key, 'button_' ) === 0 ||
 				strpos( $key, 'message_' ) === 0 ||
 				strpos( $key, 'error_' ) === 0 ||
 				strpos( $key, 'info_' ) === 0 ||
 				strpos( $key, 'email_' ) === 0 ) {
-				// Use ter_get_translated to get the translated string
+				// Use ter_get_translated to get the translated string.
 				if ( function_exists( 'ter_get_translated' ) ) {
 					return ter_get_translated( $key, $localized_default );
 				}
@@ -69,7 +77,7 @@ function ter_get_config( $key, $default_value = '' ) {
 		}
 	}
 
-	// Final fallback to provided default
+	// Final fallback to provided default.
 	return $default_value;
 }
 
@@ -79,18 +87,18 @@ function ter_get_config( $key, $default_value = '' ) {
  */
 function ter_get_default_config() {
 	return array(
-		// General Settings
+		// General Settings.
 		'recipient_email'                => '',
 		'send_customer_copy'             => 0,
 		'delete_uploads_after_send'      => 0,
 		'temp_folder'                    => 'travel-expense-report',
 		'subject_prefix'                 => '',
 
-		// Cost Rates
+		// Cost Rates.
 		'rate_km_allowance'              => '0.30',
 		'rate_passenger_allowance'       => '0.01',
 
-		// Email Templates (will be localized)
+		// Email Templates (will be localized).
 		'internal_subject'               => 'Travel expense report — {firstname} {lastname}',
 		'internal_message'               => '<p>Internal preview: {firstname} {lastname} — {event} — {total} €</p>',
 		'customer_subject'               => 'Copy of your travel expense report — {event}',
@@ -98,7 +106,7 @@ function ter_get_default_config() {
 		'success_message'                => 'Email sent successfully!',
 		'failure_message'                => 'Error sending email.',
 
-		// Form placeholders
+		// Form placeholders.
 		'placeholder_iban'               => 'DE89 3704 0044 0532 0130 00',
 		'placeholder_bic'                => 'COBADEFFXXX',
 		'placeholder_event'              => 'e.g. Summer Camp 2025, January group meeting',
@@ -112,7 +120,7 @@ function ter_get_default_config() {
 		'placeholder_ticket_destination' => 'Destination',
 		'placeholder_ticket_description' => 'Description',
 
-		// All form labels and messages (will be translated via i18n)
+		// All form labels and messages (will be translated via i18n).
 		'label_first_name'               => 'First name',
 		'label_last_name'                => 'Last name',
 		'label_iban'                     => 'IBAN',
@@ -135,19 +143,19 @@ function ter_get_default_config() {
 		'label_cost'                     => 'Cost (€)',
 		'label_ticket'                   => 'Ticket',
 
-		// Buttons
+		// Buttons.
 		'button_add_goods'               => '+ Add purchase',
 		'button_upload_receipt'          => 'Upload receipt',
 		'button_add_trip'                => '+ Add trip',
 		'button_add_ticket'              => '+ Add train ticket',
 		'button_send_email'              => 'Send by email',
 
-		// Messages
+		// Messages.
 		'message_sending'                => 'Sending email...',
 		'message_success'                => 'Email sent successfully!',
 		'message_error'                  => 'Error sending email.',
 
-		// Errors
+		// Errors.
 		'error_required_fields'          => 'Please fill all required personal details.',
 		'error_invalid_iban'             => 'Invalid IBAN.',
 		'error_invalid_bic'              => 'Invalid BIC.',
@@ -157,7 +165,7 @@ function ter_get_default_config() {
 		'error_no_tickets'               => '⚠️ Please upload receipts for all filled train tickets.',
 		'error_loading'                  => 'Error loading form.',
 
-		// Info boxes
+		// Info boxes.
 		'info_submit_per_event'          => '⚠️ Important note: Please submit one form per event or cost center.',
 		'info_receipts_required'         => 'ℹ️ Note: Only advance payments and purchases with an invoice, receipt or self-issued slip are accepted. Please upload a receipt for every filled entry.',
 		'info_cost_summary'              => '📊 Cost summary:',
@@ -167,7 +175,7 @@ function ter_get_default_config() {
 		'info_ticket_costs'              => 'Total train tickets:',
 		'info_total_costs'               => 'Total costs:',
 
-		// Email labels
+		// Email labels.
 		'email_personal_details'         => 'Personal details',
 		'email_name'                     => 'Name:',
 		'email_iban'                     => 'IBAN:',
@@ -187,17 +195,21 @@ function ter_get_default_config() {
 	);
 }
 
-// Initialize config with defaults if not set
+/**
+ * Initialize config with defaults if not set.
+ *
+ * @return void
+ */
 function ter_init_config() {
 	$config = get_option( 'ter_config' );
 	if ( empty( $config ) || ! is_array( $config ) ) {
-		// Use English defaults (will be translated at display time)
+		// Use English defaults (will be translated at display time).
 		$defaults = ter_get_default_config();
 		update_option( 'ter_config', $defaults );
 	}
 }
 
-// Add initialization hook - use plugins_loaded with priority 20 to run after ter_load_textdomain (priority 10)
+// Add initialization hook - use plugins_loaded with priority 20 to run after ter_load_textdomain (priority 10).
 add_action( 'plugins_loaded', 'ter_init_config', 20 );
 
 /**
