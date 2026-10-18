@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Text domain constant.
 define( 'TER_TEXTDOMAIN', 'travel-expense-report' );
 
-// Register text domain for both frontend and admin
+// Register text domain for both frontend and admin.
 // Use early hooks to ensure textdomain is loaded before admin menu is registered.
 add_action( 'plugins_loaded', 'ter_load_textdomain', 10 );
 add_action( 'admin_init', 'ter_load_textdomain', 1 ); // Load earlier in admin context.
@@ -31,14 +31,15 @@ function ter_load_textdomain() {
 		return;
 	}
 
-	// Load translation files from /languages directory
+	// Load translation files from /languages directory.
 	// Parameters:
 	// 1. Text domain (string)
 	// 2. Deprecated path (false)
 	// 3. Relative path from plugins directory.
 
 	$plugin_rel_path = dirname( plugin_basename( __FILE__ ) ) . '/../languages';
-	$loaded          = load_plugin_textdomain( TER_TEXTDOMAIN, false, $plugin_rel_path );
+	// Bundled translations live in /languages and are not served from WordPress.org language packs.
+	$loaded = load_plugin_textdomain( TER_TEXTDOMAIN, false, $plugin_rel_path ); // phpcs:ignore PluginCheck.CodeAnalysis.DiscouragedFunctions.load_plugin_textdomainFound
 
 	// Debug.
 	if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
@@ -51,7 +52,9 @@ function ter_load_textdomain() {
 }
 
 /**
- * Get current language code (en_US, de_DE, etc.)
+ * Get current language code (en, de, etc.).
+ *
+ * @return string Two-letter language code.
  */
 function ter_get_current_language() {
 	$lang = get_locale();

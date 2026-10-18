@@ -104,7 +104,7 @@ function ter_register_settings_advanced() {
  * @return string
  */
 function ter_get_field_label( $key ) {
-	// First check if this is a translatable key (label_*, button_*, etc.)
+	// First check if this is a translatable key (label_*, button_*, etc.).
 	// For these keys, show the TRANSLATED value from i18n, not the technical name.
 	if ( strpos( $key, 'label_' ) === 0 ||
 		strpos( $key, 'button_' ) === 0 ||
@@ -219,7 +219,7 @@ function ter_field_text( $args ) {
 	}
 	$default_value = isset( $defaults[ $key ] ) ? $defaults[ $key ] : '';
 
-	// For translatable keys, show the translated version in the placeholder
+	// For translatable keys, show the translated version in the placeholder.
 	// Include: label_*, button_*, message_*, error_*, info_*, email_*, placeholder_*,
 	// and template keys: internal_subject, internal_message, customer_subject, customer_message, etc.
 	$translatable_prefixes = array( 'label_', 'button_', 'message_', 'error_', 'info_', 'email_', 'placeholder_' );
@@ -287,7 +287,7 @@ function ter_field_textarea( $args ) {
 	}
 	$default_value = isset( $defaults[ $key ] ) ? $defaults[ $key ] : '';
 
-	// For translatable keys, show the translated version in the placeholder
+	// For translatable keys, show the translated version in the placeholder.
 	// Include: label_*, button_*, message_*, error_*, info_*, email_*, placeholder_*,
 	// and template keys: internal_subject, internal_message, customer_subject, customer_message, etc.
 	$translatable_prefixes = array( 'label_', 'button_', 'message_', 'error_', 'info_', 'email_', 'placeholder_' );

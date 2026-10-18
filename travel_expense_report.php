@@ -59,7 +59,7 @@ function ter_deactivate_plugin() {
 	flush_rewrite_rules();
 }
 
-// Include configuration and i18n systems
+// Include configuration and i18n systems.
 // CRITICAL: Load in this order to avoid function not found errors.
 if ( ! function_exists( 'ter_get_config' ) ) {
 	require_once TER_PLUGIN_DIR . 'includes/config.php';
@@ -71,7 +71,7 @@ if ( ! function_exists( 'ter_add_settings_page' ) ) {
 	require_once TER_PLUGIN_DIR . 'includes/settings-admin.php';
 }
 
-// Load TCPDF library (if available)
+// Load TCPDF library (if available).
 // Uses tecnickcom/tcpdf from https://github.com/tecnickcom/TCPDF.
 $tcpdf_path = TER_PLUGIN_DIR . 'vendor/tcpdf/tcpdf.php';
 $fpdi_path  = TER_PLUGIN_DIR . 'vendor/fpdi/src/autoload.php';
@@ -266,7 +266,7 @@ function ter_apply_template( $template, $vars = array() ) {
 	}
 	$replacements = array();
 	foreach ( $vars as $k => $v ) {
-		// allow HTML in values if explicitly provided as safe; otherwise escape.
+		// Allow HTML in values if explicitly provided as safe; otherwise escape.
 		$replacements[ '{' . $k . '}' ] = is_string( $v ) ? esc_html( $v ) : esc_html( (string) $v );
 	}
 	return strtr( $template, $replacements );
@@ -327,7 +327,7 @@ add_action( 'wp_ajax_nopriv_ter_serve_temp_file', 'ter_serve_temp_file' );
  * @return void
  */
 function ter_serve_temp_file() {
-	// Expect GET param 'file' and 'nonce'
+	// Expect GET param 'file' and 'nonce'.
 	// The nonce is verified right below, before the file is used.
 	$file  = isset( $_GET['file'] ) ? sanitize_text_field( wp_unslash( $_GET['file'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	$nonce = isset( $_GET['nonce'] ) ? sanitize_text_field( wp_unslash( $_GET['nonce'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -496,7 +496,7 @@ function ter_send_email() {
 	$upload_dir    = ter_get_temp_upload_dir();
 	$safe_filename = sanitize_file_name( $firstname . '_' . $lastname . '_' . $event . '_' . gmdate( 'Y-m-d' ) );
 
-	// keep track of files we created so we can delete them later.
+	// Keep track of files we created so we can delete them later.
 	$created_files = array();
 
 	if ( TER_TCPDF_AVAILABLE ) {
@@ -536,7 +536,7 @@ function ter_send_email() {
 		return;
 	}
 
-	// If customer copy is requested, prefer to send it as BCC on the internal mail
+	// If customer copy is requested, prefer to send it as BCC on the internal mail.
 	// This increases deliverability (single SMTP transaction) and avoids duplicate sends.
 	$bcc_added = false;
 	if ( $send_customer_copy && ! empty( $customer_email ) ) {
@@ -589,14 +589,14 @@ function ter_send_email() {
 		$customer_attempted = true;
 		// If we added BCC to the internal mail, we consider the customer copy attempted/sent.
 		if ( $bcc_added ) {
-			// customer copy was sent as BCC with the internal mail; reflect that in flags.
+			// Customer copy was sent as BCC with the internal mail; reflect that in flags.
 			$customer_sent = $sent;
 			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 				ter_log( $log_prefix . ' customer copy via BCC ' . ( $customer_sent ? 'succeeded' : 'failed' ) . ' for ' . $customer_email );
 			}
 			// Fallback: if internal send failed, try sending a separate copy without Bcc header.
 			if ( ! $customer_sent ) {
-				// remove any Bcc headers.
+				// Remove any Bcc headers.
 				$headers_no_bcc = array_values(
 					array_filter(
 						$headers,
@@ -1120,7 +1120,7 @@ function ter_append_deletion_log( $data ) {
 		'entries' => isset( $data['entries'] ) ? $data['entries'] : array(),
 	);
 	$log[]    = $item;
-	// keep last 200.
+	// Keep last 200.
 	if ( count( $log ) > 200 ) {
 		$log = array_slice( $log, -200 );
 	}

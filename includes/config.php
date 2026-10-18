@@ -52,14 +52,14 @@ function ter_get_config( $key, $default_value = '' ) {
 		return $config[ $key ];
 	}
 
-	// Otherwise get localized default (if i18n is ready)
+	// Otherwise get localized default (if i18n is ready).
 	// This will use translations from .mo/.po files.
 	if ( function_exists( 'ter_get_localized_defaults' ) ) {
 		$localized_defaults = ter_get_localized_defaults();
 		if ( isset( $localized_defaults[ $key ] ) ) {
 			$localized_default = $localized_defaults[ $key ];
 
-			// For label_*, button_*, message_*, error_*, info_* keys
+			// For label_*, button_*, message_*, error_*, info_* keys.
 			// Apply translation function to get i18n translated text.
 			if ( strpos( $key, 'label_' ) === 0 ||
 				strpos( $key, 'button_' ) === 0 ||
