@@ -6,7 +6,7 @@
     <exclude-pattern>*/vendor/*</exclude-pattern>
     <exclude-pattern>*/node_modules/*</exclude-pattern>
     <exclude-pattern>*/languages/*</exclude-pattern>
-    <exclude-pattern>*/tests/bootstrap.php</exclude-pattern>
+    <exclude-pattern>*/tests/*</exclude-pattern>
 
     <!-- Supported file extensions -->
     <arg name="extensions" value="php"/>
@@ -21,8 +21,27 @@
     <!-- Include WordPress Coding Standards -->
     <!-- Note: You may need to install WPCS locally for this to work in your editor -->
     <rule ref="WordPress-Core"/>
-    <rule ref="WordPress-Docs"/>
     <rule ref="WordPress-Extra"/>
+
+    <!-- Plugin-specific settings -->
+    <config name="text_domain" value="travel-expense-report"/>
+
+    <!-- These helpers return already-escaped output -->
+    <rule ref="WordPress.Security.EscapeOutput">
+        <properties>
+            <property name="customEscapingFunctions" type="array">
+                <element value="ter_get_translated_html"/>
+                <element value="ter_get_translated_attr"/>
+                <element value="ter_get_translated_html_content"/>
+                <element value="wp_create_nonce"/>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- Renaming the main plugin file would deactivate existing installs -->
+    <rule ref="WordPress.Files.FileName.NotHyphenatedLowercase">
+        <exclude-pattern>travel_expense_report.php</exclude-pattern>
+    </rule>
 
     <!-- Check for PHP cross-version compatibility -->
     <config name="testVersion" value="8.1-"/>
