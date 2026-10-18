@@ -16,7 +16,6 @@ jobs:
 
       # This action checks the plugin for many common errors and WordPress.org requirements
       - name: WordPress Plugin Check
-        uses: 10up/wp-plugin-check-action@v1
+        uses: WordPress/plugin-check-action@v1
         with:
-          # You can configure this to be more or less strict
-          build-directory: '.'
+          build-dir: '.'
