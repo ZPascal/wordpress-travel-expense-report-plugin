@@ -29,9 +29,15 @@
     <rule ref="PHPCompatibility"/>
 
     <!-- Verify that no forbidden functions are used -->
-    <rule ref="WordPress.PHP.ForbiddenFunctions">
+    <rule ref="Generic.PHP.ForbiddenFunctions">
         <properties>
-            <property name="forbidden_functions" type="array" value="eval,exec,system,passthru,shell_exec"/>
+            <property name="forbiddenFunctions" type="array">
+                <element key="exec" value="null"/>
+                <element key="system" value="null"/>
+                <element key="passthru" value="null"/>
+                <element key="shell_exec" value="null"/>
+            </property>
         </properties>
     </rule>
+    <rule ref="Squiz.PHP.Eval"/>
 </ruleset>
