@@ -285,9 +285,32 @@ function ter_apply_template( $template, $vars = array() ) {
 function ter_get_temp_upload_dir( $create = true ) {
 	$config = get_option( 'ter_config', array() );
 	$folder = ! empty( $config['temp_folder'] ) ? sanitize_file_name( $config['temp_folder'] ) : 'travel-expense-report';
-	$base   = trailingslashit( get_temp_dir() ) . $folder . '/';
-	if ( $create && ! file_exists( $base ) ) {
-		wp_mkdir_p( $base );
+
+	// Candidate parents: the system temp dir first, then the uploads dir for hosts where the temp dir is not writable.
+	$parents = array( get_temp_dir() );
+	$uploads = wp_upload_dir( null, false );
+	if ( ! empty( $uploads['basedir'] ) ) {
+		$parents[] = $uploads['basedir'];
+	}
+
+	$base = '';
+	foreach ( $parents as $parent ) {
+		$candidate = trailingslashit( $parent ) . $folder . '/';
+		if ( $create && ! file_exists( $candidate ) ) {
+			wp_mkdir_p( $candidate );
+		}
+		if ( is_dir( $candidate ) && wp_is_writable( $candidate ) ) {
+			$base = $candidate;
+			break;
+		}
+	}
+
+	if ( '' === $base ) {
+		$base = trailingslashit( $parents[0] ) . $folder . '/';
+	} elseif ( $create && ! file_exists( $base . '.htaccess' ) ) {
+		// Block direct web access; files are only served through the nonce-protected AJAX endpoint.
+		file_put_contents( $base . '.htaccess', "Require all denied\nDeny from all\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+		file_put_contents( $base . 'index.php', "<?php\n// Silence is golden.\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
 	}
 	return trailingslashit( $base );
 }
@@ -398,7 +421,8 @@ function ter_upload_receipt() {
 	remove_filter( 'upload_dir', $redirect_temp );
 
 	if ( isset( $uploaded['error'] ) ) {
-		wp_send_json_error( 'Only JPG, PNG and PDF files are allowed.' );
+		// Pass on WordPress's actual reason (size limit, unwritable temp dir, type mismatch, ...).
+		wp_send_json_error( 'Upload failed: ' . wp_strip_all_tags( $uploaded['error'] ) );
 		return;
 	}
 

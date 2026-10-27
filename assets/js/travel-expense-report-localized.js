@@ -235,13 +235,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Monitor changes - synchronisiere Tabelle und Karten
     document.addEventListener('input', function(e) {
-        if (e.target.classList.contains('betrag') ||
-            e.target.classList.contains('km_input') ||
-            e.target.classList.contains('km_passengers') ||
-            e.target.classList.contains('ticket_cost')) {
-            updateTotal();
-        }
-
         // Synchronisiere Eingaben zwischen Tabelle und Karte für Fahrten
         if (e.target.classList.contains('km_input') ||
             e.target.classList.contains('km_passengers') ||
@@ -289,6 +282,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     cardInput.value = value;
                 }
             }
+        }
+
+        // Recalculate only after table and card are in sync (totals read the table inputs)
+        if (e.target.classList.contains('betrag') ||
+            e.target.classList.contains('km_input') ||
+            e.target.classList.contains('km_passengers') ||
+            e.target.classList.contains('ticket_cost')) {
+            updateTotal();
         }
     });
 
